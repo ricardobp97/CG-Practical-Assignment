@@ -23,7 +23,7 @@ GLenum face = GL_FRONT;
 int startX, startY;
 int alpha = 0, beta = 0;
 
-std::vector<float> coord;
+std::vector<float> coord_vertices;
 
 void changeSize(int w, int h) {
     // Prevent a divide by zero, when window is too short
@@ -51,11 +51,30 @@ void changeSize(int w, int h) {
 }
 
 void saveVertices() {
-    // nome dos ficheiros com as coordenadas está guardado em files_list
+    float x, y, z;
+
+    std::ifstream myFile;
+    for (const auto &i : files_list) {
+        myFile.open(i);
+        if (myFile.is_open()) {
+            while (myFile >> x >> y >> z) {
+                coord_vertices.push_back(x);
+                coord_vertices.push_back(y);
+                coord_vertices.push_back(z);
+            }
+            myFile.close();
+        } else perror("Unable to open file");
+    }
 }
 
 void draw() {
-
+    for (size_t i = 0; i + 9 < coord_vertices.size(); i += 9) {
+        glBegin(GL_TRIANGLES);
+        glVertex3f(coord_vertices[i], coord_vertices[i + 1], coord_vertices[i + 2]);
+        glVertex3f(coord_vertices[i + 3], coord_vertices[i + 4], coord_vertices[i + 5]);
+        glVertex3f(coord_vertices[i + 6], coord_vertices[i + 7], coord_vertices[i + 8]);
+        glEnd();
+    }
 }
 
 void renderScene() {
