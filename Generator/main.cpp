@@ -5,8 +5,13 @@
 void planeFile(float l, const std::string &filename) {
     std::ofstream myFile;
     myFile.open(filename);
-
-
+	myfile << -l / 2 << " " << 0 << " " << l / 2 << "\n"; //A
+	myfile << l / 2 << " " << 0 << " " << l / 2 << "\n"; //B
+	myfile << l / 2 << " " << 0 << " " << -l / 2 << "\n"; //C
+	
+	myfile << l / 2 << " " << 0 << " " << -l / 2 << "\n"; //C
+	myfile << -l / 2 << " " << 0 << " " << -l / 2 << "\n"; //D
+	myfile << -l / 2 << " " << 0 << " " << l / 2 << "\n"; //A
 
     myFile.close();
     std::cout << "DONE" << std::endl;
@@ -15,12 +20,65 @@ void planeFile(float l, const std::string &filename) {
 void boxFile(float x, float y, float z, const std::string &filename) {
     std::ofstream myFile;
     myFile.open(filename);
+	
+	//Base Inferior
+	myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+	myfile << -x / 2 << " " << 0 << " " << z / 2 << "\n"; //D
+	myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
 
+	myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+	myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+	myfile << x / 2 << " " << 0 << " " << -z / 2 << "\n"; //B
+	
+	//Base Superior
+	myfile << x / 2 << " " << y << " " << z / 2 << "\n"; //F
+	myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+	myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+	
+	myfile << x / 2 << " " << y << " " << z / 2 << "\n"; //F
+	myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+	myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
 
+	//Lateral Frente
+	myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+	myfile << x / 2 << " " << y << " " << z / 2 << "\n"; //F
+	myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+	
+	myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+	myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+	myfile << -x / 2 << " " << 0 << " " << z / 2 << "\n"; //D
+
+	//Lateral Trás
+	myfile << x / 2 << " " << 0 << " " << -z / 2 << "\n"; //B
+	myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+	myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+
+	myfile << x / 2 << " " << 0 << " " << -z / 2 << "\n"; //B
+	myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+	myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+	
+	//Lateral Direita
+	myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+	myfile << x / 2 << " " << 0 << " " << -z / 2 << "\n"; //B
+	myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+
+	myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+	myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+	myfile << x / 2 << " " << y << " " << z / 2 << "\n"; //F
+	
+	//Lateral Esquerda
+	myfile << -x / 2 << " " << 0 << " " << z / 2 << "\n"; //D
+	myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+	myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+
+	myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+	myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+	myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
 
     myFile.close();
     std::cout << "DONE" << std::endl;
 }
+
 
 void sphereFile(float radius, int slices, int stacks, const std::string &filename) {
     std::ofstream myFile;
@@ -35,12 +93,30 @@ void sphereFile(float radius, int slices, int stacks, const std::string &filenam
 void coneFile(float radius, float height, int slices, int stacks, const std::string &filename) {
     std::ofstream myFile;
     myFile.open(filename);
+	float alpha = 0;
+	float dalpha = 2 * M_PI / slices;
 
+	for (int i = 0; i < slices; i++) {
+		
+		//Base
+		myfile << 0 << " " << -height / 2 << " " << 0 << "\n";//O
+		myfile << radius * sin(alpha + dalpha) << " " << -height / 2 << " " << radius * cos(alpha + dalpha) << "\n";//B
+		myfile << radius*sin(alpha) << " " << -height / 2 << " " << radius*cos(alpha) << "\n"; //A
+
+		//Lateral
+		myfile << radius*sin(alpha) << " " << -height / 2 << " " << radius*cos(alpha) << "\n";//A
+		myfile << radius * sin(alpha + dalpha) << " " << -height / 2 << " " << radius * cos(alpha + dalpha) << "\n";//B
+		myfile << 0.0 << " " << height / 2 << " " << 0.0 << "\n"; //V	
+
+		alpha = alpha + dalpha;
+
+	}
 
 
     myFile.close();
     std::cout << "DONE" << std::endl;
 }
+
 
 int main(int argc, char **argv) {
     float plane_l, box_x, box_y, box_z, sphere_radius, cone_radius, cone_height;
