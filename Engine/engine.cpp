@@ -68,7 +68,7 @@ void saveVertices() {
 }
 
 void draw() {
-    for (size_t i = 0; i + 9 < coord_vertices.size(); i += 9) {
+    for (size_t i = 0; i + 9 <= coord_vertices.size(); i += 9) {
         glBegin(GL_TRIANGLES);
         glVertex3f(coord_vertices[i], coord_vertices[i + 1], coord_vertices[i + 2]);
         glVertex3f(coord_vertices[i + 3], coord_vertices[i + 4], coord_vertices[i + 5]);
@@ -126,6 +126,7 @@ void processKeys(unsigned char key, int x, int y) {
             break;
         case '+':
             scale += 0.1;
+            break;
         default:
             break;
     }
@@ -151,11 +152,6 @@ void processSpecialKeys(int key_code, int x, int y) {
             if (mode == GL_FILL) mode = GL_LINE;
             else if (mode == GL_LINE) mode = GL_POINT;
             else mode = GL_FILL;
-            break;
-        case GLUT_KEY_F3:
-            if (face == GL_FRONT) face = GL_BACK;
-            else if (face == GL_BACK) face = GL_FRONT_AND_BACK;
-            else face = GL_FRONT;
             break;
         default:
             break;
@@ -215,7 +211,7 @@ int main(int argc, char **argv) {
     glEnable(GL_CULL_FACE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    std::string xml_name = "ss.xml";
+    std::string xml_name = "box.xml";
     if (argc == 2) xml_name = argv[1];
     xml(xml_name);
 
