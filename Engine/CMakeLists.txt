@@ -45,8 +45,13 @@ else (WIN32) #Linux and Mac
 
 endif(WIN32)
 
-
-
-
-
-
+file(COPY test/plane.3d DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/plane.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/box.3d DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/box.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/cone.3d DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/cone.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/sphere.3d DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/sphere.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/all.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY test/boxcone.xml DESTINATION ${CMAKE_BINARY_DIR})
