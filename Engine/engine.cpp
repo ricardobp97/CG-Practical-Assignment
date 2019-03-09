@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(200, 0);
     glutInitWindowSize(800, 800);
-    glutCreateWindow("Sistema Solar");
+    glutCreateWindow("Engine");
 
     // put callback registration here
     glutDisplayFunc(renderScene);
