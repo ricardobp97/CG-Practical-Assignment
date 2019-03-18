@@ -23,8 +23,6 @@ GLenum face = GL_FRONT;
 int startX, startY;
 int alpha = 0, beta = 0;
 
-std::vector<float> coord_vertices;
-
 void changeSize(int w, int h) {
     // Prevent a divide by zero, when window is too short
     // (you cant make a window with zero width).
@@ -50,30 +48,38 @@ void changeSize(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void saveVertices() {
-    float x, y, z;
+void draw(std::list<Group> g) {
+    std::list<Group>::iterator it;
 
-    std::ifstream myFile;
-    for (const auto &i : files_list) {
-        myFile.open(i);
-        if (myFile.is_open()) {
-            while (myFile >> x >> y >> z) {
-                coord_vertices.push_back(x);
-                coord_vertices.push_back(y);
-                coord_vertices.push_back(z);
+    for (it = g.begin(); it != g.end(); ++it) {
+        glPushMatrix();
+        std::vector<float> v = it->getVertices();
+
+        for (int i = it->getNextTransf(); i != 0; i = it->getNextTransf()) {
+            if(i == TRANSLATE) {
+                float* translate = it->getTranslate();
+                glTranslatef(translate[0], translate[1], translate[2]);
             }
-            myFile.close();
-        } else perror("Unable to open file");
-    }
-}
+            else if(i == ROTATE) {
+                float* rotate = it->getRotate();
+                glRotatef(rotate[0], rotate[1], rotate[2], rotate[3]);
+            }
+            else if(i == SCALE) {
+                float * scale = it->getScale();
+                glScalef(scale[0], scale[1], scale[2]);
+            }
+        }
 
-void draw() {
-    for (size_t i = 0; i + 9 <= coord_vertices.size(); i += 9) {
-        glBegin(GL_TRIANGLES);
-        glVertex3f(coord_vertices[i], coord_vertices[i + 1], coord_vertices[i + 2]);
-        glVertex3f(coord_vertices[i + 3], coord_vertices[i + 4], coord_vertices[i + 5]);
-        glVertex3f(coord_vertices[i + 6], coord_vertices[i + 7], coord_vertices[i + 8]);
-        glEnd();
+        for (size_t i = 0; i + 9 <= v.size(); i += 9) {
+            glBegin(GL_TRIANGLES);
+            glVertex3f(v[i], v[i + 1], v[i + 2]);
+            glVertex3f(v[i + 3], v[i + 4], v[i + 5]);
+            glVertex3f(v[i + 6], v[i + 7], v[i + 8]);
+            glEnd();
+        }
+
+        draw(it->getChildGroups());
+        glPopMatrix();
     }
 }
 
@@ -95,7 +101,7 @@ void renderScene() {
     glPolygonMode(face, mode);
 
     // put drawing instructions here
-    draw();
+    draw(groups);
 
     // End of frame
     glutSwapBuffers();
@@ -122,7 +128,7 @@ void processKeys(unsigned char key, int x, int y) {
             translate_y -= 0.2;
             break;
         case '-':
-            scale -= 0.1;
+            if(scale > 0.1) scale -= 0.1;
             break;
         case '+':
             scale += 0.1;
@@ -211,11 +217,9 @@ int main(int argc, char **argv) {
     glEnable(GL_CULL_FACE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    std::string xml_name = "box.xml";
+    std::string xml_name = "SistemaSolar.xml";
     if (argc == 2) xml_name = argv[1];
     xml(xml_name);
-
-    saveVertices();
 
     // enter GLUT's main loop
     glutMainLoop();

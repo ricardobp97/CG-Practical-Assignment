@@ -2,10 +2,15 @@
 #define ENGINE_PARSE_H
 
 #include "include/pugixml.hpp"
+#include "Group.h"
+#include <list>
 
-extern std::vector<std::string> files_list;
+extern std::list<Group> groups;
 
-void group_xml(pugi::xml_node group);
+Group group_xml(pugi::xml_node group);
+
 void xml(std::string string);
+
+void storeVertices(Group *g, std::string file);
 
 #endif

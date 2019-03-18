@@ -5,7 +5,7 @@ PROJECT(engine)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} engine.cpp parser.cpp include/pugixml.cpp)
+add_executable(${PROJECT_NAME} engine.cpp parser.cpp include/pugixml.cpp Group.cpp Group.h)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
@@ -45,13 +45,14 @@ else (WIN32) #Linux and Mac
 
 endif(WIN32)
 
-file(COPY test/plane.3d DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/plane.xml DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/box.3d DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/box.xml DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/cone.3d DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/cone.xml DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/sphere.3d DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/sphere.xml DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/all.xml DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY test/boxcone.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/plane.3d DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/plane.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/box.3d DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/box.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/cone.3d DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/cone.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/sphere.3d DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/sphere.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/allModels.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/boxcone.xml DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY exemplos/SistemaSolar.xml DESTINATION ${CMAKE_BINARY_DIR})
