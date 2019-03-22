@@ -18,7 +18,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-#*.dll
+*.dll
 
 # Fortran module files
 *.mod
@@ -28,7 +28,7 @@
 *.lai
 *.la
 *.a
-#*.lib
+*.lib
 
 # Executables
 *.exe
@@ -513,3 +513,5 @@ ASALocalRun/
 healthchecksdb
 
 # End of https://www.gitignore.io/api/c++,clion,linux,cmake,windows,visualstudio
+
+!toolkits/**/*
