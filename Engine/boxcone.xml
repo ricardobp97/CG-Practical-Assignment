@@ -1,0 +1,8 @@
+<scene>
+    <group>
+        <models>
+            <model file="cone.3d" />
+            <model file="box.3d" />
+        </models>
+    </group>
+</scene>

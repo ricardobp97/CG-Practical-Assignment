@@ -2,6 +2,7 @@
 #include <GLUT/glut.h>
 #else
 
+#include <stdlib.h>
 #include <GL/glut.h>
 
 #endif
@@ -11,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <math.h>
 
 #include "parser.h"
 
