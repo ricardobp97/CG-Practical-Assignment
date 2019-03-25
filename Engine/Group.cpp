@@ -1,7 +1,3 @@
-//
-// Created by andre on 17-03-2019.
-//
-
 #include "Group.h"
 
 Group::Group() {
