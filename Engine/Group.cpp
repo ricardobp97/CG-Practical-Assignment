@@ -47,7 +47,7 @@ void Group::setVertices(std::vector<float> v) {
     vertices.insert(std::end(vertices), std::begin(v), std::end(v));
 }
 
-void Group::addGroup(Group g) {
+void Group::addChildGroup(Group g) {
     childGroups.push_back(g);
 }
 

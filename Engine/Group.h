@@ -31,7 +31,7 @@ public:
     void setRotate(float angle, float axisX, float axisY, float axisZ);
     void setScale(float x, float y, float z);
     void setVertices(std::vector<float> v);
-    void addGroup(Group g);
+    void addChildGroup(Group g);
 
     float* getTranslate();
     float* getRotate();

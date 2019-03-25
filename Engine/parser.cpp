@@ -33,7 +33,7 @@ Group group_xml(pugi::xml_node group) {
 
         /** <group> **/
         if (group_child.name() == std::string("group")) {
-            g->addGroup(group_xml(group_child));
+            g->addChildGroup(group_xml(group_child));
         }
 
         /** <models> **/
