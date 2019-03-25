@@ -1,7 +1,3 @@
-//
-// Created by andre on 17-03-2019.
-//
-
 #ifndef ENGINE_GROUP_H
 #define ENGINE_GROUP_H
 
