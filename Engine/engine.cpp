@@ -1,8 +1,10 @@
 #ifdef __APPLE__
+#include <GLUT/glew.h>
 #include <GLUT/glut.h>
 #else
 
 #include <stdlib.h>
+#include <GL/glew.h>
 #include <GL/glut.h>
 
 #endif
@@ -26,6 +28,8 @@ GLenum face = GL_FRONT;
 
 int startX, startY;
 int alpha = 0, beta = 0;
+
+GLuint buffers;
 
 void changeSize(int w, int h) {
     // Prevent a divide by zero, when window is too short
@@ -60,27 +64,21 @@ void draw(std::list<Group> g) {
         std::vector<float> v = it->getVertices();
 
         for (int i = it->getNextTransf(); i != 0; i = it->getNextTransf()) {
-            if(i == TRANSLATE) {
-                float* translate = it->getTranslate();
+            if (i == TRANSLATE) {
+                float *translate = it->getTranslate();
                 glTranslatef(translate[0], translate[1], translate[2]);
-            }
-            else if(i == ROTATE) {
-                float* rotate = it->getRotate();
+            } else if (i == ROTATE) {
+                float *rotate = it->getRotate();
                 glRotatef(rotate[0], rotate[1], rotate[2], rotate[3]);
-            }
-            else if(i == SCALE) {
-                float * scale = it->getScale();
+            } else if (i == SCALE) {
+                float *scale = it->getScale();
                 glScalef(scale[0], scale[1], scale[2]);
             }
         }
 
-        for (size_t i = 0; i + 9 <= v.size(); i += 9) {
-            glBegin(GL_TRIANGLES);
-            glVertex3f(v[i], v[i + 1], v[i + 2]);
-            glVertex3f(v[i + 3], v[i + 4], v[i + 5]);
-            glVertex3f(v[i + 6], v[i + 7], v[i + 8]);
-            glEnd();
-        }
+        glBindBuffer(GL_ARRAY_BUFFER, buffers);
+        glVertexPointer(3, GL_FLOAT, 0, nullptr);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(v.size()));
 
         draw(it->getChildGroups());
         glPopMatrix();
@@ -132,7 +130,7 @@ void processKeys(unsigned char key, int x, int y) {
             translate_y -= 0.2;
             break;
         case '-':
-            if(scale > 0.1) scale -= 0.1;
+            if (scale > 0.1) scale -= 0.1;
             break;
         case '+':
             scale += 0.1;
@@ -196,6 +194,17 @@ void processMouseMotion(int x, int y) {
     pz = static_cast<float>(10 * cos(alphaAux * M_PI / 180) * cos(betaAux * M_PI / 180));
 }
 
+void bufferInit(std::list<Group> g) {
+    std::list<Group>::iterator it;
+
+    for (it = g.begin(); it != g.end(); ++it) {
+        std::vector<float> vertices = it->getVertices();
+        glBindBuffer(GL_ARRAY_BUFFER, buffers);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+        bufferInit(it->getChildGroups());
+    }
+}
 
 int main(int argc, char **argv) {
     // put GLUT init here
@@ -224,6 +233,17 @@ int main(int argc, char **argv) {
     std::string xml_name = "SistemaSolar.xml";
     if (argc == 2) xml_name = argv[1];
     xml(xml_name);
+
+#ifndef __APPLE__
+    glewInit();
+#endif
+
+    // Enable Buffers
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    // Generate Buffer Object
+    glGenBuffers(1, &buffers);
+    bufferInit(groups);
 
     // enter GLUT's main loop
     glutMainLoop();
