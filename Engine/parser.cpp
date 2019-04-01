@@ -50,18 +50,32 @@ Group group_xml(pugi::xml_node group) {
         /** <translate/> **/
         if (group_child.name() == std::string("translate")) {
             pugi::xml_node translate = group_child;
-            g->setTranslate(std::stof(translate.attribute("X").value()),
-                            std::stof(translate.attribute("Y").value()),
-                            std::stof(translate.attribute("Z").value()));
+
+            if(translate.attribute("time")) {
+                // (...)
+            }
+
+            else {
+                g->setTranslate(std::stof(translate.attribute("X").value()),
+                                std::stof(translate.attribute("Y").value()),
+                                std::stof(translate.attribute("Z").value()));
+            }
         }
 
         /** <rotate/> **/
         if (group_child.name() == std::string("rotate")) {
             pugi::xml_node rotate = group_child;
-            g->setRotate(std::stof(rotate.attribute("angle").value()),
-                         std::stof(rotate.attribute("axisX").value()),
-                         std::stof(rotate.attribute("axisY").value()),
-                         std::stof(rotate.attribute("axisZ").value()));
+
+            if(rotate.attribute("time")) {
+                // (...)
+            }
+
+            else {
+                g->setRotate(std::stof(rotate.attribute("angle").value()),
+                             std::stof(rotate.attribute("axisX").value()),
+                             std::stof(rotate.attribute("axisY").value()),
+                             std::stof(rotate.attribute("axisZ").value()));
+            }
         }
 
         /** <scale/> **/
