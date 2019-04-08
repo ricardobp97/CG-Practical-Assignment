@@ -51,11 +51,22 @@ Group group_xml(pugi::xml_node group) {
         if (group_child.name() == std::string("translate")) {
             pugi::xml_node translate = group_child;
 
-            if(translate.attribute("time")) {
-                // (...)
-            }
+            if (translate.attribute("time")) {
+                float *p;
+                float time = std::stof(translate.attribute("time").value());
+                std::map<int, float *> pointsCatmull = std::map<int, float *>();
+                int i = 0;
 
-            else {
+                for (pugi::xml_node catmull = translate.first_child(); catmull; catmull = catmull.next_sibling()) {
+                    p = new float[3];
+                    p[0] = std::stof(catmull.attribute("X").value());
+                    p[1] = std::stof(catmull.attribute("Y").value());
+                    p[2] = std::stof(catmull.attribute("Z").value());
+                    pointsCatmull.insert(std::make_pair(i, p));
+                    i++;
+                }
+                g->setTranslateCatmull(time, pointsCatmull);
+            } else {
                 g->setTranslate(std::stof(translate.attribute("X").value()),
                                 std::stof(translate.attribute("Y").value()),
                                 std::stof(translate.attribute("Z").value()));
@@ -66,11 +77,9 @@ Group group_xml(pugi::xml_node group) {
         if (group_child.name() == std::string("rotate")) {
             pugi::xml_node rotate = group_child;
 
-            if(rotate.attribute("time")) {
-                // (...)
-            }
+            if (rotate.attribute("time")) {
 
-            else {
+            } else {
                 g->setRotate(std::stof(rotate.attribute("angle").value()),
                              std::stof(rotate.attribute("axisX").value()),
                              std::stof(rotate.attribute("axisY").value()),

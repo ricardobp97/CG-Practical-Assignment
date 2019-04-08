@@ -3,7 +3,6 @@
 
 #include "include/pugixml.hpp"
 #include "Group.h"
-#include <list>
 
 extern std::list<Group> groups;
 

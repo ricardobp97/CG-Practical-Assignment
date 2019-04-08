@@ -5,7 +5,7 @@ PROJECT(engine)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_executable(${PROJECT_NAME} engine.cpp parser.cpp include/pugixml.cpp Group.cpp Group.h)
+add_executable(${PROJECT_NAME} engine.cpp parser.cpp include/pugixml.cpp Group.cpp Group.h catmull-rom.h catmull-rom.cpp)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})

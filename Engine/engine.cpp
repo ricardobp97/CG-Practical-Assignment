@@ -16,10 +16,11 @@
 #include <cmath>
 
 #define _USE_MATH_DEFINES
+
 #include <math.h>
 
 #include "parser.h"
-
+#include "catmull-rom.h"
 
 float translate_x, translate_y, translate_z, rotate_y, rotate_x, scale = 1;
 float px = 0, py = 0, pz = 10;
@@ -28,6 +29,7 @@ GLenum face = GL_FRONT;
 
 int startX, startY;
 int alpha = 0, beta = 0;
+bool drawCatmull = false;
 
 GLuint buffers;
 
@@ -56,6 +58,20 @@ void changeSize(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
+void renderCatmullRomCurve(std::map<int, float *> p) {
+// draw curve using line segments with GL_LINE_LOOP
+    glBegin(GL_LINE_LOOP);
+    for (float gt = 0; gt < 1; gt += 0.0001) {
+        float pos[3];
+        float deriv[3];
+
+        getGlobalCatmullRomPoint(gt, pos, deriv, p);
+
+        glVertex3f(pos[0], pos[1], pos[2]);
+    }
+    glEnd();
+}
+
 void draw(std::list<Group> g) {
     std::list<Group>::iterator it;
 
@@ -65,11 +81,29 @@ void draw(std::list<Group> g) {
 
         for (int i = it->getNextTransf(); i != 0; i = it->getNextTransf()) {
             if (i == TRANSLATE) {
-                float *translate = it->getTranslate();
-                glTranslatef(translate[0], translate[1], translate[2]);
+                if (it->isTransCatmull()) {
+                    float deriv[3], pos[3];
+                    std::map<int, float*> points = it->getPointsCatmull();
+
+                    float t = glutGet(GLUT_ELAPSED_TIME) / (it->getTime() * 1000);
+
+                    if(drawCatmull) renderCatmullRomCurve(points);
+                    getGlobalCatmullRomPoint(t, pos, deriv, points);
+
+                    glTranslatef(pos[0], pos[1], pos[2]);
+                }
+                else {
+                    float *translate = it->getTranslate();
+                    glTranslatef(translate[0], translate[1], translate[2]);
+                }
             } else if (i == ROTATE) {
-                float *rotate = it->getRotate();
-                glRotatef(rotate[0], rotate[1], rotate[2], rotate[3]);
+                if (it->isRotateCatmull()) {
+
+                }
+                else {
+                    float *rotate = it->getRotate();
+                    glRotatef(rotate[0], rotate[1], rotate[2], rotate[3]);
+                }
             } else if (i == SCALE) {
                 float *scale = it->getScale();
                 glScalef(scale[0], scale[1], scale[2]);
@@ -160,6 +194,9 @@ void processSpecialKeys(int key_code, int x, int y) {
             if (mode == GL_FILL) mode = GL_LINE;
             else if (mode == GL_LINE) mode = GL_POINT;
             else mode = GL_FILL;
+            break;
+        case GLUT_KEY_F3:
+            drawCatmull = !drawCatmull;
             break;
         default:
             break;
