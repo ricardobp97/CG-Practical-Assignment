@@ -26,6 +26,7 @@ float translate_x, translate_y, translate_z, rotate_y, rotate_x, scale = 1;
 float px = 0, py = 0, pz = 10;
 GLenum mode = GL_FILL;
 GLenum face = GL_FRONT;
+int timebase = 0, frame = 0;
 
 int startX, startY;
 int alpha = 0, beta = 0;
@@ -131,6 +132,10 @@ void draw(std::list<Group> g) {
 }
 
 void renderScene() {
+    float fps;
+    int time;
+    char s[64];
+
     // clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -149,6 +154,16 @@ void renderScene() {
 
     // put drawing instructions here
     draw(groups);
+
+    frame++;
+    time = glutGet(GLUT_ELAPSED_TIME);
+    if (time - timebase > 1000) {
+        fps = frame * 1000.0 / (time - timebase);
+        timebase = time;
+        frame = 0;
+        sprintf(s, "Engine | FPS: %f", fps);
+        glutSetWindowTitle(s);
+    }
 
     // End of frame
     glutSwapBuffers();
