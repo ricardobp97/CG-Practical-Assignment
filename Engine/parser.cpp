@@ -78,6 +78,10 @@ Group group_xml(pugi::xml_node group) {
             pugi::xml_node rotate = group_child;
 
             if (rotate.attribute("time")) {
+                g->setRotateCatmull(std::stof(rotate.attribute("time").value()),
+                                    std::stof(rotate.attribute("axisX").value()),
+                                    std::stof(rotate.attribute("axisY").value()),
+                                    std::stof(rotate.attribute("axisZ").value()));
 
             } else {
                 g->setRotate(std::stof(rotate.attribute("angle").value()),

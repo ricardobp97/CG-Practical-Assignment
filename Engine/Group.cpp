@@ -20,11 +20,11 @@ void Group::setTranslate(float x, float y, float z) {
     translate[2] = z;
 }
 
-void Group::setTranslateCatmull(float t, std::map<int, float *> p) {
+void Group::setTranslateCatmull(float time, std::map<int, float *> p) {
     order[n_order++] = TRANSLATE;
 
     transCatmull = true;
-    time = t;
+    time_translate = time;
     pointsCatmull = std::move(p);
 }
 
@@ -33,6 +33,17 @@ void Group::setRotate(float angle, float axisX, float axisY, float axisZ) {
 
     rotate = new float[4];
     rotate[0] = angle;
+    rotate[1] = axisX;
+    rotate[2] = axisY;
+    rotate[3] = axisZ;
+}
+
+void Group::setRotateCatmull(float time, float axisX, float axisY, float axisZ) {
+    order[n_order++] = ROTATE;
+    rotateCatmull = true;
+
+    rotate = new float[3];
+    rotate[0] = time;
     rotate[1] = axisX;
     rotate[2] = axisY;
     rotate[3] = axisZ;
@@ -93,5 +104,5 @@ bool Group::isRotateCatmull() {
 }
 
 float Group::getTime() {
-    return time;
+    return time_translate;
 }

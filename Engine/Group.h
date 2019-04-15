@@ -21,7 +21,7 @@ class Group {
     std::map<int, float*> pointsCatmull;
     bool transCatmull = false;
     bool rotateCatmull = false;
-    float time;
+    float time_translate;
 
     std::vector<float> vertices;
     std::list<Group> childGroups;
@@ -35,6 +35,7 @@ public:
     void setVertices(std::vector<float> v);
     void addChildGroup(Group g);
     void setTranslateCatmull(float time, std::map<int, float *> pointsCatmull);
+    void setRotateCatmull(float time, float axisX, float axisY, float axisZ);
 
     float* getTranslate();
     float* getRotate();

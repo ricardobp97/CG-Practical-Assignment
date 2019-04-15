@@ -82,15 +82,25 @@ void draw(std::list<Group> g) {
         for (int i = it->getNextTransf(); i != 0; i = it->getNextTransf()) {
             if (i == TRANSLATE) {
                 if (it->isTransCatmull()) {
-                    float deriv[3], pos[3];
+                    float pos[3], xD[3], yD[3] = {0,1,0}, zD[3];
+
                     std::map<int, float*> points = it->getPointsCatmull();
 
                     float t = glutGet(GLUT_ELAPSED_TIME) / (it->getTime() * 1000);
 
                     if(drawCatmull) renderCatmullRomCurve(points);
-                    getGlobalCatmullRomPoint(t, pos, deriv, points);
+                    getGlobalCatmullRomPoint(t, pos, xD, points);
+
+                    normalize(xD);
+                    cross(xD, yD, zD);
+                    normalize(zD);
+                    cross(zD, xD, yD);
 
                     glTranslatef(pos[0], pos[1], pos[2]);
+
+                    float m[16];
+                    buildRotMatrix(xD, yD, zD, m);
+                    glMultMatrixf(m);
                 }
                 else {
                     float *translate = it->getTranslate();
@@ -98,7 +108,8 @@ void draw(std::list<Group> g) {
                 }
             } else if (i == ROTATE) {
                 if (it->isRotateCatmull()) {
-
+                    float * rotate = it->getRotate();
+                    glRotatef((glutGet(GLUT_ELAPSED_TIME) * 360) / (rotate[0] * 1000), rotate[1], rotate[2], rotate[3]);
                 }
                 else {
                     float *rotate = it->getRotate();
