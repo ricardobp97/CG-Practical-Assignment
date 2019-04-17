@@ -7,6 +7,7 @@
 #include "parser.h"
 
 std::list<Group> groups = std::list<Group>();
+int nBuffers = 0;
 
 void xml(std::string xml_name) {
     pugi::xml_document doc;
@@ -28,6 +29,7 @@ void xml(std::string xml_name) {
 Group group_xml(pugi::xml_node group) {
     auto *g = new Group();
     bool flag_models = false;
+    nBuffers++;
 
     for (pugi::xml_node group_child = group.first_child(); group_child; group_child = group_child.next_sibling()) {
 
@@ -102,7 +104,7 @@ Group group_xml(pugi::xml_node group) {
     return *g;
 }
 
-void storeVertices(Group *g, std::string file) {
+void storeVertices(Group *g, const std::string& file) {
     float x, y, z;
     std::vector<float> aux;
 

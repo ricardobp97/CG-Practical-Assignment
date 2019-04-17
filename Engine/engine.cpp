@@ -32,7 +32,8 @@ int startX, startY;
 int alpha = 0, beta = 0;
 bool drawCatmull = false;
 
-GLuint buffers;
+GLuint *buffers;
+int nIndB = 0;
 
 void changeSize(int w, int h) {
     // Prevent a divide by zero, when window is too short
@@ -83,13 +84,13 @@ void draw(std::list<Group> g) {
         for (int i = it->getNextTransf(); i != 0; i = it->getNextTransf()) {
             if (i == TRANSLATE) {
                 if (it->isTransCatmull()) {
-                    float pos[3], xD[3], yD[3] = {0,1,0}, zD[3];
+                    float pos[3], xD[3], yD[3] = {0, 1, 0}, zD[3];
 
-                    std::map<int, float*> points = it->getPointsCatmull();
+                    std::map<int, float *> points = it->getPointsCatmull();
 
                     float t = glutGet(GLUT_ELAPSED_TIME) / (it->getTime() * 1000);
 
-                    if(drawCatmull) renderCatmullRomCurve(points);
+                    if (drawCatmull) renderCatmullRomCurve(points);
                     getGlobalCatmullRomPoint(t, pos, xD, points);
 
                     normalize(xD);
@@ -102,14 +103,13 @@ void draw(std::list<Group> g) {
                     float m[16];
                     buildRotMatrix(xD, yD, zD, m);
                     glMultMatrixf(m);
-                }
-                else {
+                } else {
                     float *translate = it->getTranslate();
                     glTranslatef(translate[0], translate[1], translate[2]);
                 }
             } else if (i == ROTATE) {
                 if (it->isRotateCatmull()) {
-                    float * rotate = it->getRotate();
+                    float *rotate = it->getRotate();
                     glRotatef((glutGet(GLUT_ELAPSED_TIME) * 360) / (rotate[0] * 1000), rotate[1], rotate[2], rotate[3]);
                 }
                 else {
@@ -122,9 +122,10 @@ void draw(std::list<Group> g) {
             }
         }
 
-        glBindBuffer(GL_ARRAY_BUFFER, buffers);
+        glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
         glVertexPointer(3, GL_FLOAT, 0, nullptr);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(v.size()));
+        nIndB++;
 
         draw(it->getChildGroups());
         glPopMatrix();
@@ -153,6 +154,7 @@ void renderScene() {
     glPolygonMode(face, mode);
 
     // put drawing instructions here
+    nIndB = 0;
     draw(groups);
 
     frame++;
@@ -262,8 +264,9 @@ void bufferInit(std::list<Group> g) {
 
     for (it = g.begin(); it != g.end(); ++it) {
         std::vector<float> vertices = it->getVertices();
-        glBindBuffer(GL_ARRAY_BUFFER, buffers);
+        glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+        nIndB++;
 
         bufferInit(it->getChildGroups());
     }
@@ -291,7 +294,6 @@ int main(int argc, char **argv) {
     // OpenGL settings
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     std::string xml_name = "SistemaSolar.xml";
     if (argc == 2) xml_name = argv[1];
@@ -305,7 +307,8 @@ int main(int argc, char **argv) {
     glEnableClientState(GL_VERTEX_ARRAY);
 
     // Generate Buffer Object
-    glGenBuffers(1, &buffers);
+    buffers = new GLuint[nBuffers];
+    glGenBuffers(nBuffers, buffers);
     bufferInit(groups);
 
     // enter GLUT's main loop
