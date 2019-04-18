@@ -20,12 +20,13 @@ void Group::setTranslate(float x, float y, float z) {
     translate[2] = z;
 }
 
-void Group::setTranslateCatmull(float time, std::map<int, float *> p) {
+void Group::setTranslateCatmull(float time, std::map<int, float *> p, std::vector<float> curve) {
     order[n_order++] = TRANSLATE;
 
     transCatmull = true;
     time_translate = time;
     pointsCatmull = std::move(p);
+    catmullCurve = std::move(curve);
 }
 
 void Group::setRotate(float angle, float axisX, float axisY, float axisZ) {
@@ -85,6 +86,10 @@ int Group::getNextTransf() {
 
 std::vector<float> Group::getVertices() {
     return vertices;
+}
+
+std::vector<float> Group::getCatmullCurve() {
+    return catmullCurve;
 }
 
 std::list<Group> Group::getChildGroups() {

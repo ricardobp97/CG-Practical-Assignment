@@ -24,6 +24,8 @@ class Group {
     float time_translate;
 
     std::vector<float> vertices;
+    std::vector<float> catmullCurve;
+
     std::list<Group> childGroups;
 
 public:
@@ -34,7 +36,7 @@ public:
     void setScale(float x, float y, float z);
     void setVertices(std::vector<float> v);
     void addChildGroup(Group g);
-    void setTranslateCatmull(float time, std::map<int, float *> pointsCatmull);
+    void setTranslateCatmull(float time, std::map<int, float *> pointsCatmull, std::vector<float> curve);
     void setRotateCatmull(float time, float axisX, float axisY, float axisZ);
 
     float* getTranslate();
@@ -46,6 +48,7 @@ public:
     float getTime();
     int getNextTransf();
     std::vector<float> getVertices();
+    std::vector<float> getCatmullCurve();
     std::list<Group> getChildGroups();
 };
 

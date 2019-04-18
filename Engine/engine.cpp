@@ -60,20 +60,6 @@ void changeSize(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void renderCatmullRomCurve(std::map<int, float *> p) {
-// draw curve using line segments with GL_LINE_LOOP
-    glBegin(GL_LINE_LOOP);
-    for (float gt = 0; gt < 1; gt += 0.0001) {
-        float pos[3];
-        float deriv[3];
-
-        getGlobalCatmullRomPoint(gt, pos, deriv, p);
-
-        glVertex3f(pos[0], pos[1], pos[2]);
-    }
-    glEnd();
-}
-
 void draw(std::list<Group> g) {
     std::list<Group>::iterator it;
 
@@ -90,7 +76,14 @@ void draw(std::list<Group> g) {
 
                     float t = glutGet(GLUT_ELAPSED_TIME) / (it->getTime() * 1000);
 
-                    if (drawCatmull) renderCatmullRomCurve(points);
+                    if (drawCatmull) {
+                        glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
+                        glVertexPointer(3, GL_FLOAT, 0, nullptr);
+
+                        glDrawArrays(GL_LINE_LOOP, 0, it->getCatmullCurve().size());
+                    }
+                    nIndB++;
+
                     getGlobalCatmullRomPoint(t, pos, xD, points);
 
                     normalize(xD);
@@ -263,6 +256,13 @@ void bufferInit(std::list<Group> g) {
     std::list<Group>::iterator it;
 
     for (it = g.begin(); it != g.end(); ++it) {
+        if (it->isTransCatmull()) {
+            std::vector<float> curve = it->getCatmullCurve();
+
+            glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
+            glBufferData(GL_ARRAY_BUFFER, curve.size() * sizeof(float), curve.data(), GL_STATIC_DRAW);
+            nIndB++;
+        }
         std::vector<float> vertices = it->getVertices();
         glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);

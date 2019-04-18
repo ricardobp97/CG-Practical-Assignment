@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include "parser.h"
+#include "catmull-rom.h"
 
 std::list<Group> groups = std::list<Group>();
 int nBuffers = 0;
@@ -54,6 +55,7 @@ Group group_xml(pugi::xml_node group) {
             pugi::xml_node translate = group_child;
 
             if (translate.attribute("time")) {
+                nBuffers++;
                 float *p;
                 float time = std::stof(translate.attribute("time").value());
                 std::map<int, float *> pointsCatmull = std::map<int, float *>();
@@ -67,7 +69,20 @@ Group group_xml(pugi::xml_node group) {
                     pointsCatmull.insert(std::make_pair(i, p));
                     i++;
                 }
-                g->setTranslateCatmull(time, pointsCatmull);
+
+                float alpha = 1.0f / (pointsCatmull.size() * 50);
+                std::vector<float> curve;
+
+                for (float gt = 0; gt < 1; gt += alpha) {
+                    float pos[3];
+                    float deriv[3];
+
+                    getGlobalCatmullRomPoint(gt, pos, deriv, pointsCatmull);
+                    curve.push_back(pos[0]);
+                    curve.push_back(pos[1]);
+                    curve.push_back(pos[2]);
+                }
+                g->setTranslateCatmull(time, pointsCatmull, curve);
             } else {
                 g->setTranslate(std::stof(translate.attribute("X").value()),
                                 std::stof(translate.attribute("Y").value()),
