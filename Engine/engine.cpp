@@ -80,7 +80,7 @@ void draw(std::list<Group> g) {
                         glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
                         glVertexPointer(3, GL_FLOAT, 0, nullptr);
 
-                        glDrawArrays(GL_LINE_LOOP, 0, it->getCatmullCurve().size());
+                        glDrawArrays(GL_LINE_LOOP, 0, it->getCatmullCurve().size() / 3);
                     }
                     nIndB++;
 
@@ -104,8 +104,7 @@ void draw(std::list<Group> g) {
                 if (it->isRotateCatmull()) {
                     float *rotate = it->getRotate();
                     glRotatef((glutGet(GLUT_ELAPSED_TIME) * 360) / (rotate[0] * 1000), rotate[1], rotate[2], rotate[3]);
-                }
-                else {
+                } else {
                     float *rotate = it->getRotate();
                     glRotatef(rotate[0], rotate[1], rotate[2], rotate[3]);
                 }
