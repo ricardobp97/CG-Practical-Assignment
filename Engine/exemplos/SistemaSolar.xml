@@ -184,20 +184,18 @@
         </models>
     </group>
     <group><!--cometa-->
-        <group>
-            <translate time="20">
-                <point X="3.0" Y="0.5" Z="0"/>
-                <point X="2.42705098312484" Y="0.5" Z="18.10684605502"/>
-                <point X="0.927050983124842" Y="0.5" Z="26.82535639108"/>
-                <point X="-0.927050983124842" Y="0.5" Z="26.82535639108"/>
-                <point X="-2.42705098312484" Y="0.5" Z="18.10684605502"/>
-                <point X="-3.0" Y="0.5" Z="0"/>
-            </translate>
-            <rotate time="8" axisX="0" axisY="1" axisZ="0"/>
-            <scale X="0.2" Y="0.2" Z="0.2"/>
-            <models>
-                <model file="teapot.3d"/>
-            </models>
-        </group>
+        <translate time="20">
+            <point X="3.0" Y="0.5" Z="0"/>
+            <point X="2.42705098312484" Y="0.5" Z="18.10684605502"/>
+            <point X="0.927050983124842" Y="0.5" Z="26.82535639108"/>
+            <point X="-0.927050983124842" Y="0.5" Z="26.82535639108"/>
+            <point X="-2.42705098312484" Y="0.5" Z="18.10684605502"/>
+            <point X="-3.0" Y="0.5" Z="0"/>
+        </translate>
+        <rotate time="8" axisX="0" axisY="1" axisZ="0"/>
+        <scale X="0.2" Y="0.2" Z="0.2"/>
+        <models>
+            <model file="teapot.3d"/>
+        </models>
     </group>
 </scene>
