@@ -43,7 +43,7 @@ void Group::setRotateCatmull(float time, float axisX, float axisY, float axisZ) 
     order[n_order++] = ROTATE;
     rotateCatmull = true;
 
-    rotate = new float[3];
+    rotate = new float[4];
     rotate[0] = time;
     rotate[1] = axisX;
     rotate[2] = axisY;
