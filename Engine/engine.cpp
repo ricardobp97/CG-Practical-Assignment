@@ -32,8 +32,13 @@ int startX, startY;
 int alpha = 0, beta = 0;
 bool drawCatmull = false;
 
-GLuint *buffers;
-int nIndB = 0;
+GLuint *vertices_buffers;
+int vertices_nIndB = 0;
+
+GLuint *textures_buffers;
+int textures_nIndB = 0;
+
+GLuint *normals_buffers;
 
 void changeSize(int w, int h) {
     // Prevent a divide by zero, when window is too short
@@ -61,28 +66,27 @@ void changeSize(int w, int h) {
 }
 
 void draw(std::list<Group> g) {
-    std::list<Group>::iterator it;
+    std::list<Group>::iterator it_g;
 
-    for (it = g.begin(); it != g.end(); ++it) {
+    for (it_g = g.begin(); it_g != g.end(); ++it_g) {
         glPushMatrix();
-        std::vector<float> v = it->getVertices();
 
-        for (int i = it->getNextTransf(); i != 0; i = it->getNextTransf()) {
+        for (int i = it_g->getNextTransf(); i != 0; i = it_g->getNextTransf()) {
             if (i == TRANSLATE) {
-                if (it->isTransCatmull()) {
+                if (it_g->isTransCatmull()) {
                     float pos[3], xD[3], yD[3] = {0, 1, 0}, zD[3];
 
-                    std::map<int, float *> points = it->getPointsCatmull();
+                    std::map<int, float *> points = it_g->getPointsCatmull();
 
-                    float t = glutGet(GLUT_ELAPSED_TIME) / (it->getTime() * 1000);
+                    float t = glutGet(GLUT_ELAPSED_TIME) / (it_g->getTime() * 1000);
 
                     if (drawCatmull) {
-                        glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
+                        glBindBuffer(GL_ARRAY_BUFFER, vertices_buffers[vertices_nIndB]);
                         glVertexPointer(3, GL_FLOAT, 0, nullptr);
 
-                        glDrawArrays(GL_LINE_LOOP, 0, it->getCatmullCurve().size() / 3);
+                        glDrawArrays(GL_LINE_LOOP, 0, it_g->getCatmullCurve().size() / 3);
                     }
-                    nIndB++;
+                    vertices_nIndB++;
 
                     getGlobalCatmullRomPoint(t, pos, xD, points);
 
@@ -97,30 +101,48 @@ void draw(std::list<Group> g) {
                     buildRotMatrix(xD, yD, zD, m);
                     glMultMatrixf(m);
                 } else {
-                    float *translate = it->getTranslate();
+                    float *translate = it_g->getTranslate();
                     glTranslatef(translate[0], translate[1], translate[2]);
                 }
             } else if (i == ROTATE) {
-                if (it->isRotateCatmull()) {
-                    float *rotate = it->getRotate();
+                if (it_g->isRotateCatmull()) {
+                    float *rotate = it_g->getRotate();
                     glRotatef((glutGet(GLUT_ELAPSED_TIME) * 360) / (rotate[0] * 1000), rotate[1], rotate[2], rotate[3]);
                 } else {
-                    float *rotate = it->getRotate();
+                    float *rotate = it_g->getRotate();
                     glRotatef(rotate[0], rotate[1], rotate[2], rotate[3]);
                 }
             } else if (i == SCALE) {
-                float *scale = it->getScale();
+                float *scale = it_g->getScale();
                 glScalef(scale[0], scale[1], scale[2]);
             }
         }
 
-        glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
-        glVertexPointer(3, GL_FLOAT, 0, nullptr);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(v.size()));
-        nIndB++;
+        std::list<Model> m = it_g->getModels();
+        std::list<Model>::iterator it_m;
 
-        draw(it->getChildGroups());
-        glPopMatrix();
+        for (it_m = m.begin(); it_m != m.end(); ++it_m) {
+            std::vector<float> v = it_m->getVertices();
+
+            glBindBuffer(GL_ARRAY_BUFFER, vertices_buffers[vertices_nIndB]);
+            glVertexPointer(3, GL_FLOAT, 0, nullptr);
+
+            if (it_m->hasTextures()) {
+                glBindBuffer(GL_ARRAY_BUFFER, normals_buffers[vertices_nIndB]);
+                glNormalPointer(GL_FLOAT, 0, nullptr);
+                glBindBuffer(GL_ARRAY_BUFFER, textures_buffers[textures_nIndB++]);
+                glTexCoordPointer(2, GL_FLOAT, 0, nullptr);
+                glBindTexture(GL_TEXTURE_2D, it_m->getTextID());
+            }
+
+            vertices_nIndB++;
+            glDrawArrays(GL_TRIANGLES, 0, v.size());
+
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            draw(it_g->getChildGroups());
+            glPopMatrix();
+        }
     }
 }
 
@@ -146,7 +168,8 @@ void renderScene() {
     glPolygonMode(face, mode);
 
     // put drawing instructions here
-    nIndB = 0;
+    vertices_nIndB = 0;
+    textures_nIndB = 0;
     draw(groups);
 
     frame++;
@@ -251,24 +274,68 @@ void processMouseMotion(int x, int y) {
     pz = static_cast<float>(10 * cos(alphaAux * M_PI / 180) * cos(betaAux * M_PI / 180));
 }
 
-void bufferInit(std::list<Group> g) {
-    std::list<Group>::iterator it;
+void bindBuffers(std::list<Group> g) {
+    std::list<Group>::iterator it_g;
 
-    for (it = g.begin(); it != g.end(); ++it) {
-        if (it->isTransCatmull()) {
-            std::vector<float> curve = it->getCatmullCurve();
+    for (it_g = g.begin(); it_g != g.end(); ++it_g) {
+        if (it_g->isTransCatmull()) {
+            std::vector<float> curve = it_g->getCatmullCurve();
 
-            glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
+            glBindBuffer(GL_ARRAY_BUFFER, vertices_buffers[vertices_nIndB]);
             glBufferData(GL_ARRAY_BUFFER, curve.size() * sizeof(float), curve.data(), GL_STATIC_DRAW);
-            nIndB++;
+            vertices_nIndB++;
         }
-        std::vector<float> vertices = it->getVertices();
-        glBindBuffer(GL_ARRAY_BUFFER, buffers[nIndB]);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-        nIndB++;
 
-        bufferInit(it->getChildGroups());
+        std::list<Model> m = it_g->getModels();
+        std::list<Model>::iterator it_m;
+
+        for (it_m = m.begin(); it_m != m.end(); ++it_m) {
+            // vertices
+            std::vector<float> vertices = it_m->getVertices();
+            glBindBuffer(GL_ARRAY_BUFFER, vertices_buffers[vertices_nIndB]);
+            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data() , GL_STATIC_DRAW);
+
+            // normals
+            std::vector<float> normals = it_m->getNormals();
+            glBindBuffer(GL_ARRAY_BUFFER, normals_buffers[vertices_nIndB]);
+            glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), normals.data(), GL_STATIC_DRAW);
+            vertices_nIndB++;
+
+            // textures
+            std::vector<float> textures = it_m->getTextures();
+            glBindBuffer(GL_ARRAY_BUFFER, textures_buffers[textures_nIndB++]);
+            glBufferData(GL_ARRAY_BUFFER, textures.size() * sizeof(float), textures.data(), GL_STATIC_DRAW);
+        }
+
+        bindBuffers(it_g->getChildGroups());
     }
+}
+
+void initBuffers() {
+    // Generate Buffer Object
+    vertices_buffers = new GLuint[vert_nBuffers];
+    glGenBuffers(vert_nBuffers, vertices_buffers);
+
+    normals_buffers = new GLuint[vert_nBuffers];
+    glGenBuffers(vert_nBuffers, normals_buffers);
+
+    textures_buffers = new GLuint[text_nBuffers];
+    glGenBuffers(text_nBuffers, textures_buffers);
+}
+
+void initGL() {
+    // OpenGL settings
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    // Enable Buffers
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glClearColor(0, 0, 0, 0);
+
+    glEnable(GL_TEXTURE_2D);
 }
 
 int main(int argc, char **argv) {
@@ -290,25 +357,18 @@ int main(int argc, char **argv) {
     glutMouseFunc(processMouseButtons);
     glutMotionFunc(processMouseMotion);
 
-    // OpenGL settings
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+#ifndef __APPLE__
+    glewInit();
+#endif
 
     std::string xml_name = "SistemaSolar.xml";
     if (argc == 2) xml_name = argv[1];
     xml(xml_name);
 
-#ifndef __APPLE__
-    glewInit();
-#endif
+    initGL();
 
-    // Enable Buffers
-    glEnableClientState(GL_VERTEX_ARRAY);
-
-    // Generate Buffer Object
-    buffers = new GLuint[nBuffers];
-    glGenBuffers(nBuffers, buffers);
-    bufferInit(groups);
+    initBuffers();
+    bindBuffers(groups);
 
     // enter GLUT's main loop
     glutMainLoop();

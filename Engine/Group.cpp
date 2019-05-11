@@ -59,12 +59,12 @@ void Group::setScale(float x, float y, float z) {
     scale[2] = z;
 }
 
-void Group::setVertices(std::vector<float> v) {
-    vertices.insert(std::end(vertices), std::begin(v), std::end(v));
-}
-
 void Group::addChildGroup(Group g) {
     childGroups.push_back(g);
+}
+
+void Group::addModel(Model m) {
+    models.push_back(m);
 }
 
 float *Group::getTranslate() {
@@ -82,10 +82,6 @@ float *Group::getScale() {
 int Group::getNextTransf() {
     if (next_order == 3) return 0;
     return order[next_order++];
-}
-
-std::vector<float> Group::getVertices() {
-    return vertices;
 }
 
 std::vector<float> Group::getCatmullCurve() {
@@ -110,4 +106,8 @@ bool Group::isRotateCatmull() {
 
 float Group::getTime() {
     return time_translate;
+}
+
+std::list<Model> Group::getModels() {
+    return models;
 }

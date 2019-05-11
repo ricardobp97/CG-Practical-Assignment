@@ -3,14 +3,18 @@
 
 #include "include/pugixml.hpp"
 #include "Group.h"
+#include "Light.h"
 
 extern std::list<Group> groups;
-extern int nBuffers;
+extern std::list<Light> lights;
+
+extern int vert_nBuffers;
+extern int text_nBuffers;
+
+void xml(const std::string& string);
 
 Group group_xml(pugi::xml_node group);
 
-void xml(std::string string);
-
-void storeVertices(Group *g, const std::string& file);
+void light_xml(pugi::xml_node light);
 
 #endif

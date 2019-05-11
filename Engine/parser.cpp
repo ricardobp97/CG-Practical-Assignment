@@ -6,11 +6,16 @@
 
 #include "parser.h"
 #include "catmull-rom.h"
+#include "Model.h"
+#include "Light.h"
 
 std::list<Group> groups = std::list<Group>();
-int nBuffers = 0;
+std::list<Light> lights = std::list<Light>();
 
-void xml(std::string xml_name) {
+int vert_nBuffers = 0;
+int text_nBuffers = 0;
+
+void xml(const std::string& xml_name) {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(xml_name.c_str());
 
@@ -23,6 +28,10 @@ void xml(std::string xml_name) {
             if (scene_child.name() == std::string("group")) {
                 groups.push_back(group_xml(scene_child));
             }
+            /** <lights> **/
+            if (scene_child.name() == std::string("lights")) {
+                light_xml(scene_child);
+            }
         }
     } else perror("Unable to open file");
 }
@@ -30,7 +39,6 @@ void xml(std::string xml_name) {
 Group group_xml(pugi::xml_node group) {
     auto *g = new Group();
     bool flag_models = false;
-    nBuffers++;
 
     for (pugi::xml_node group_child = group.first_child(); group_child; group_child = group_child.next_sibling()) {
 
@@ -41,11 +49,54 @@ Group group_xml(pugi::xml_node group) {
 
         /** <models> **/
         if (group_child.name() == std::string("models") && !flag_models) {
+            auto *m = new Model();
             flag_models = true;
             for (pugi::xml_node models_child = group_child.first_child(); models_child; models_child = models_child.next_sibling()) {
                 /** <model/> **/
                 if (models_child.name() == std::string("model")) {
-                    storeVertices(g, models_child.attribute("file").value());
+                    vert_nBuffers++;
+                    m->storeVertices(models_child.attribute("file").value());
+                    if (models_child.attribute("texture").name() == std::string("texture")) {
+                        text_nBuffers++;
+                        m->setTextID(models_child.attribute("texture").value());
+                    }
+                    if (models_child.attribute("diffR").name() == std::string("diffR")) {
+                        auto *colour = new float[3];
+                        colour[0] = std::stof(models_child.attribute("diffR").value());
+                        colour[1] = std::stof(models_child.attribute("diffG").value());
+                        colour[2] = std::stof(models_child.attribute("diffB").value());
+
+                        m->setColour(DIFFUSE, colour);
+                    }
+
+                    if (models_child.attribute("specR").name() == std::string("specR")) {
+                        auto *colour = new float[3];
+                        colour[0] = std::stof(models_child.attribute("specR").value());
+                        colour[1] = std::stof(models_child.attribute("specG").value());
+                        colour[2] = std::stof(models_child.attribute("specB").value());
+
+                        m->setColour(SPECULAR, colour);
+                    }
+
+                    if (models_child.attribute("emisR").name() == std::string("emisR")) {
+                        auto *colour = new float[4];
+                        colour[0] = std::stof(models_child.attribute("emisR").value());
+                        colour[1] = std::stof(models_child.attribute("emisG").value());
+                        colour[2] = std::stof(models_child.attribute("emisB").value());
+                        colour[3] = 1;
+
+                        m->setColour(EMISSIVE, colour);
+                    }
+
+                    if (models_child.attribute("ambiR").name() == std::string("ambiR")) {
+                        auto *colour = new float[3];
+                        colour[0] = std::stof(models_child.attribute("ambiR").value());
+                        colour[1] = std::stof(models_child.attribute("ambiG").value());
+                        colour[2] = std::stof(models_child.attribute("ambiB").value());
+
+                        m->setColour(AMBIENT, colour);
+                    }
+                    g->addModel(*m);
                 }
             }
         }
@@ -55,7 +106,7 @@ Group group_xml(pugi::xml_node group) {
             pugi::xml_node translate = group_child;
 
             if (translate.attribute("time")) {
-                nBuffers++;
+                vert_nBuffers++;
                 float *p;
                 float time = std::stof(translate.attribute("time").value());
                 std::map<int, float *> pointsCatmull = std::map<int, float *>();
@@ -119,21 +170,38 @@ Group group_xml(pugi::xml_node group) {
     return *g;
 }
 
-void storeVertices(Group *g, const std::string& file) {
-    float x, y, z;
-    std::vector<float> aux;
+void light_xml(pugi::xml_node light) {
+    Light *l = nullptr;
 
-    std::ifstream myFile;
+    for (pugi::xml_node light_child = light.first_child(); light_child; light_child = light_child.next_sibling()) {
+        if (light_child.attribute("type").value() == std::string("POINT")) {
+            float param[3];
+            param[0] = std::stof(light_child.attribute("posX").value());
+            param[1] = std::stof(light_child.attribute("posY").value());
+            param[2] = std::stof(light_child.attribute("posZ").value());
 
-    myFile.open(file);
-    if (myFile.is_open()) {
-        while (myFile >> x >> y >> z) {
-            aux.push_back(x);
-            aux.push_back(y);
-            aux.push_back(z);
+            l = new Light(POINT, param);
+        } else if (light_child.attribute("type").value() == std::string("DIRECTIONAL")) {
+            float param[3];
+            param[0] = std::stof(light_child.attribute("dirX").value());
+            param[1] = std::stof(light_child.attribute("dirY").value());
+            param[2] = std::stof(light_child.attribute("dirZ").value());
+
+            l = new Light(DIRECTIONAL, param);
+        } else if (light_child.attribute("type").value() == std::string("SPOT")) {
+            float param[8];
+            param[0] = std::stof(light_child.attribute("posX").value());
+            param[1] = std::stof(light_child.attribute("posY").value());
+            param[2] = std::stof(light_child.attribute("posZ").value());
+            param[3] = std::stof(light_child.attribute("dirX").value());
+            param[4] = std::stof(light_child.attribute("dirY").value());
+            param[5] = std::stof(light_child.attribute("dirZ").value());
+            param[6] = std::stof(light_child.attribute("exp").value());
+            param[7] = std::stof(light_child.attribute("cut").value());
+
+            l = new Light(SPOT, param);
         }
-        myFile.close();
 
-        g->setVertices(aux);
-    } else perror("Unable to open file");
+        lights.push_back(*l);
+    }
 }
