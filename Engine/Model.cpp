@@ -12,31 +12,29 @@ Model::Model() {
 
 void Model::storeVertices(const std::string &file) {
     float x, y, z;
-    int n = 0;
 
     std::ifstream myFile;
 
     myFile.open(file);
     if (myFile.is_open()) {
-        while (myFile >> x >> y >> z) {
-            if ((n + 3) % 3 == 0) {
+        while (myFile.peek() != EOF) {
+            myFile >> x >> y >> z;
+            if(!myFile.fail()) {
                 vertices.push_back(x);
                 vertices.push_back(y);
                 vertices.push_back(z);
             }
-
-            if ((n + 2) % 3 == 0) {
+            myFile >> x >> y >> z;
+            if(!myFile.fail()) {
                 normals.push_back(x);
                 normals.push_back(y);
                 normals.push_back(z);
             }
-
-
-            if ((n + 1) % 3 == 0) {
+            myFile >> x >> y;
+            if(!myFile.fail()) {
                 textures.push_back(x);
                 textures.push_back(y);
             }
-            n++;
         }
         myFile.close();
     } else perror("Unable to open file");
