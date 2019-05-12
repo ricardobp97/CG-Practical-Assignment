@@ -83,10 +83,17 @@ void draw(std::list<Group> g) {
                     float t = glutGet(GLUT_ELAPSED_TIME) / (it_g->getTime() * 1000);
 
                     if (drawCatmull) {
+                        if (!lights.empty()) {
+                            glPushAttrib(GL_LIGHTING_BIT);
+                            float color[4] = {1, 1, 1, 1};
+                            glMaterialfv(GL_FRONT, GL_EMISSION, color);
+                        }
                         glBindBuffer(GL_ARRAY_BUFFER, vertices_buffers[vertices_nIndB]);
                         glVertexPointer(3, GL_FLOAT, 0, nullptr);
 
                         glDrawArrays(GL_LINE_LOOP, 0, it_g->getCatmullCurve().size() / 3);
+
+                        if (!lights.empty()) glPopAttrib();
                     }
                     vertices_nIndB++;
 
@@ -157,6 +164,7 @@ void draw(std::list<Group> g) {
             glDrawArrays(GL_TRIANGLES, 0, v.size());
 
             glBindTexture(GL_TEXTURE_2D, 0);
+            if (it_m->hasColour() && !lights.empty()) glPopAttrib();
         }
 
         draw(it_g->getChildGroups());
