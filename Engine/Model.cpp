@@ -6,8 +6,10 @@
 Model::Model() {
     has_color = false;
     colour_type = 0;
+    colour = nullptr;
 
     has_textures = false;
+    textID = 0;
 }
 
 void Model::storeVertices(const std::string &file) {
@@ -19,19 +21,19 @@ void Model::storeVertices(const std::string &file) {
     if (myFile.is_open()) {
         while (myFile.peek() != EOF) {
             myFile >> x >> y >> z;
-            if(!myFile.fail()) {
+            if (!myFile.fail()) {
                 vertices.push_back(x);
                 vertices.push_back(y);
                 vertices.push_back(z);
             }
             myFile >> x >> y >> z;
-            if(!myFile.fail()) {
+            if (!myFile.fail()) {
                 normals.push_back(x);
                 normals.push_back(y);
                 normals.push_back(z);
             }
             myFile >> x >> y;
-            if(!myFile.fail()) {
+            if (!myFile.fail()) {
                 textures.push_back(x);
                 textures.push_back(y);
             }
@@ -42,18 +44,29 @@ void Model::storeVertices(const std::string &file) {
 
 void Model::setTextID(std::string file) {
     has_textures = true;
-    textID = loadTexture(file);
+    textID = loadTexture(std::move(file));
 }
 
 void Model::setColour(int type, float *c) {
     has_color = true;
-
     colour_type = type;
     colour = c;
 }
 
 bool Model::hasTextures() {
     return has_textures;
+}
+
+bool Model::hasColour() {
+    return has_color;
+}
+
+int Model::getType() {
+    return colour_type;
+}
+
+float *Model::getColour() {
+    return colour;
 }
 
 std::vector<float> Model::getVertices() {

@@ -11,7 +11,7 @@ extern std::list<Light> lights;
 extern int vert_nBuffers;
 extern int text_nBuffers;
 
-void xml(const std::string& string);
+void xml(const std::string &string);
 
 Group group_xml(pugi::xml_node group);
 

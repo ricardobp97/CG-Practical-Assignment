@@ -15,7 +15,7 @@ std::list<Light> lights = std::list<Light>();
 int vert_nBuffers = 0;
 int text_nBuffers = 0;
 
-void xml(const std::string& xml_name) {
+void xml(const std::string &xml_name) {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(xml_name.c_str());
 
@@ -56,10 +56,12 @@ Group group_xml(pugi::xml_node group) {
                 if (models_child.name() == std::string("model")) {
                     vert_nBuffers++;
                     m->storeVertices(models_child.attribute("file").value());
+
                     if (models_child.attribute("texture").name() == std::string("texture")) {
                         text_nBuffers++;
                         m->setTextID(models_child.attribute("texture").value());
                     }
+
                     if (models_child.attribute("diffR").name() == std::string("diffR")) {
                         auto *colour = new float[3];
                         colour[0] = std::stof(models_child.attribute("diffR").value());

@@ -32,6 +32,12 @@ public:
 
     bool hasTextures();
 
+    bool hasColour();
+
+    int getType();
+
+    float *getColour();
+
     std::vector<float> getVertices();
 
     std::vector<float> getNormals();

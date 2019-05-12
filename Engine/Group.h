@@ -20,8 +20,8 @@ class Group {
     int next_order;
 
     std::map<int, float*> pointsCatmull;
-    bool transCatmull = false;
-    bool rotateCatmull = false;
+    bool transCatmull;
+    bool rotateCatmull;
     float time_translate;
 
     std::vector<float> catmullCurve;
@@ -35,8 +35,8 @@ public:
     void setTranslate(float x, float y, float z);
     void setRotate(float angle, float axisX, float axisY, float axisZ);
     void setScale(float x, float y, float z);
-    void addChildGroup(Group g);
-    void addModel(Model m);
+    void addChildGroup(const Group& g);
+    void addModel(const Model& m);
     void setTranslateCatmull(float time, std::map<int, float *> pointsCatmull, std::vector<float> curve);
     void setRotateCatmull(float time, float axisX, float axisY, float axisZ);
 

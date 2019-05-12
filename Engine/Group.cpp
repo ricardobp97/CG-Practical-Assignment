@@ -7,6 +7,10 @@ Group::Group() {
     n_order = 0;
     next_order = 0;
 
+    transCatmull = false;
+    rotateCatmull = false;
+    time_translate = false;
+
     for (int i = 0; i < 3; i++)
         order[i] = 0;
 }
@@ -59,11 +63,11 @@ void Group::setScale(float x, float y, float z) {
     scale[2] = z;
 }
 
-void Group::addChildGroup(Group g) {
+void Group::addChildGroup(const Group &g) {
     childGroups.push_back(g);
 }
 
-void Group::addModel(Model m) {
+void Group::addModel(const Model &m) {
     models.push_back(m);
 }
 

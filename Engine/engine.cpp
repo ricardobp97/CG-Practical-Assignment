@@ -67,6 +67,8 @@ void changeSize(int w, int h) {
 
 void draw(std::list<Group> g) {
     std::list<Group>::iterator it_g;
+    if (lights.empty()) glDisable(GL_LIGHTING);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
     for (it_g = g.begin(); it_g != g.end(); ++it_g) {
         glPushMatrix();
@@ -127,21 +129,67 @@ void draw(std::list<Group> g) {
             glBindBuffer(GL_ARRAY_BUFFER, vertices_buffers[vertices_nIndB]);
             glVertexPointer(3, GL_FLOAT, 0, nullptr);
 
+            glBindBuffer(GL_ARRAY_BUFFER, normals_buffers[vertices_nIndB]);
+            glNormalPointer(GL_FLOAT, 0, nullptr);
+
             if (it_m->hasTextures()) {
-                glBindBuffer(GL_ARRAY_BUFFER, normals_buffers[vertices_nIndB]);
-                glNormalPointer(GL_FLOAT, 0, nullptr);
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
                 glBindBuffer(GL_ARRAY_BUFFER, textures_buffers[textures_nIndB++]);
                 glTexCoordPointer(2, GL_FLOAT, 0, nullptr);
                 glBindTexture(GL_TEXTURE_2D, it_m->getTextID());
+            }
+
+            if (it_m->hasColour() && !lights.empty()) {
+                float *colour = it_m->getColour();
+                glPushAttrib(GL_LIGHTING_BIT);
+
+                if (it_m->getType() == DIFFUSE)
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, colour);
+                if (it_m->getType() == SPECULAR)
+                    glMaterialfv(GL_FRONT, GL_SPECULAR, colour);
+                if (it_m->getType() == EMISSIVE)
+                    glMaterialfv(GL_FRONT, GL_EMISSION, colour);
+                if (it_m->getType() == AMBIENT)
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, colour);
             }
 
             vertices_nIndB++;
             glDrawArrays(GL_TRIANGLES, 0, v.size());
 
             glBindTexture(GL_TEXTURE_2D, 0);
+        }
 
-            draw(it_g->getChildGroups());
-            glPopMatrix();
+        draw(it_g->getChildGroups());
+        glPopMatrix();
+    }
+}
+
+void draw_lights() {
+    std::list<Light>::iterator it;
+    int nLight = GL_LIGHT0;
+
+    for (it = lights.begin(); it != lights.end() && nLight <= GL_LIGHT7; ++it, nLight++) {
+        int type = it->getType();
+        float *param = it->getParam();
+        float pos[4] = {param[0], param[1], param[2], param[3]};
+
+        GLfloat amb[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+        GLfloat diff[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+        glLightfv(nLight, GL_AMBIENT, amb);
+        glLightfv(nLight, GL_DIFFUSE, diff);
+
+        glEnable(nLight);
+
+        if (type == POINT)
+            glLightfv(nLight, GL_POSITION, pos);
+        else if (type == DIRECTIONAL)
+            glLightfv(nLight, GL_POSITION, pos);
+        else if (type == SPOT) {
+            float spotDir[3] = {param[4], param[5], param[6]};
+            glLightfv(nLight, GL_POSITION, pos);
+            glLightfv(nLight, GL_SPOT_DIRECTION, spotDir);
+            glLightf(nLight, GL_SPOT_CUTOFF, param[7]);
+            glLightf(nLight, GL_SPOT_EXPONENT, param[8]);
         }
     }
 }
@@ -166,6 +214,8 @@ void renderScene() {
     glRotatef(rotate_x, 1, 0, 0);
     glScalef(scale, scale, scale);
     glPolygonMode(face, mode);
+
+    draw_lights();
 
     // put drawing instructions here
     vertices_nIndB = 0;
@@ -293,7 +343,7 @@ void bindBuffers(std::list<Group> g) {
             // vertices
             std::vector<float> vertices = it_m->getVertices();
             glBindBuffer(GL_ARRAY_BUFFER, vertices_buffers[vertices_nIndB]);
-            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data() , GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
             // normals
             std::vector<float> normals = it_m->getNormals();
@@ -331,10 +381,11 @@ void initGL() {
     // Enable Buffers
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glClearColor(0, 0, 0, 0);
 
+    glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
 }
 
