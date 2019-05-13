@@ -1,7 +1,10 @@
 <scene>
+    <lights>
+        <light type="POINT" posX="0" posY="0" posZ="0"/>
+    </lights>
     <group><!--SOL-->
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="sun.jpg" emisR="1" emisG="1" emisB="1"/>
         </models>
         <rotate time="122.35" axisX="0" axisY="-1" axisZ="0"/>
     </group>
@@ -22,7 +25,7 @@
         <rotate time="293.23" axisX="0" axisY="1" axisZ="0"/>
         <scale X="0.09" Y="0.09" Z="0.09"/>
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="mercury.jpg"/>
         </models>
     </group>
 
@@ -42,7 +45,7 @@
         <rotate time="1215" axisX="0" axisY="-1" axisZ="0"/>
         <scale X="0.19" Y="0.19" Z="0.19"/>
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="venus.jpg"/>
         </models>
     </group>
 
@@ -62,7 +65,7 @@
         <rotate time="5" axisX="0" axisY="1" axisZ="0"/>
         <scale X="0.2" Y="0.2" Z="0.2"/>
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="earth.jpg"/>
         </models>
         <group><!--LUA-->
             <translate time="0.75">
@@ -79,7 +82,7 @@
             </translate>
             <scale X="0.3" Y="0.3" Z="0.3"/>
             <models>
-                <model file="sphere.3d"/>
+                <model file="sphere.3d" texture="moon.jpg"/>
             </models>
         </group>
     </group>
@@ -100,7 +103,7 @@
         <rotate time="5.14" axisX="0" axisY="1" axisZ="0"/>
         <scale X="0.13" Y="0.13" Z="0.13"/>
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="mars.jpg"/>
         </models>
     </group>
 
@@ -120,7 +123,7 @@
         <rotate time="1.875" axisX="0" axisY="1" axisZ="0"/>
         <scale X="0.7" Y="0.7" Z="0.7"/>
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="jupiter.jpg"/>
         </models>
     </group>
 
@@ -140,7 +143,7 @@
         <rotate time="4" axisX="0" axisY="1" axisZ="0"/>
         <scale X="0.6" Y="0.6" Z="0.6"/>
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="saturn.jpg"/>
         </models>
     </group>
 
@@ -160,7 +163,7 @@
         <rotate time="3.5" axisX="0" axisY="-1" axisZ="0"/>
         <scale X="0.5" Y="0.5" Z="0.5"/>
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="uranus.jpg"/>
         </models>
     </group>
 
@@ -180,7 +183,7 @@
         <rotate time="2.9" axisX="0" axisY="-1" axisZ="0"/>
         <scale X="0.45" Y="0.45" Z="0.45"/>
         <models>
-            <model file="sphere.3d"/>
+            <model file="sphere.3d" texture="neptune.jpg"/>
         </models>
     </group>
     <group><!--cometa-->

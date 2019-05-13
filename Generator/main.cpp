@@ -4,19 +4,38 @@
 #include <cmath>
 #include <map>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
 void planeFile(float l, const string &filename) {
     ofstream myfile;
     myfile.open(filename);
+
     myfile << -l / 2 << " " << 0 << " " << l / 2 << "\n"; //A
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; //Normal
+    myfile << 0 << " " << 1 << "\n"; //Texture
+
     myfile << l / 2 << " " << 0 << " " << l / 2 << "\n"; //B
-    myfile << l / 2 << " " << 0 << " " << -l / 2 << "\n"; //C
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; //Normal
+    myfile << 1 << " " << 1 << "\n"; //Texture
 
     myfile << l / 2 << " " << 0 << " " << -l / 2 << "\n"; //C
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; //Normal
+    myfile << 1 << " " << 0 << "\n"; //Texture
+
+
+    myfile << l / 2 << " " << 0 << " " << -l / 2 << "\n"; //C
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; //Normal
+    myfile << 1 << " " << 0 << "\n"; //Texture
+
     myfile << -l / 2 << " " << 0 << " " << -l / 2 << "\n"; //D
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; //Normal
+    myfile << 0 << " " << 0 << "\n"; //Texture
+
     myfile << -l / 2 << " " << 0 << " " << l / 2 << "\n"; //A
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; //Normal
+    myfile << 0 << " " << 1 << "\n"; //Texture
 
     myfile.close();
     cout << "DONE" << endl;
@@ -84,35 +103,95 @@ void boxFile(float x, float y, float z, const string &filename) {
     cout << "DONE" << endl;
 }
 
+void normalize(float *a) {
+    float l = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+    if (l > 0) {
+        a[0] = a[0] / l;
+        a[1] = a[1] / l;
+        a[2] = a[2] / l;
+    }
+}
+
+void normalSphere(float x, float y, float z, float *n) {
+    n[0] = 2 * x;
+    n[1] = 2 * y;
+    n[2] = 2 * z;
+    normalize(n);
+}
 
 void sphereFile(float radius, int slices, int stacks, const string &filename) {
     ofstream myfile;
     myfile.open(filename);
 
-    float dalpha = 2 * M_PI / (slices);
     float alpha = 0;
+    float dalpha = 2 * M_PI / (slices);
 
-    float ddelta = M_PI / (stacks);
-    float delta = 0;
-
+    float beta = -M_PI / 2;
+    float dbeta = M_PI / stacks;
     float r = radius;
+    float x, y, z;
+    float n[3];
 
-    for (alpha = 0; alpha < 2 * M_PI; alpha += dalpha) {
-        for (delta = -M_PI / 2; delta <= M_PI / 2; delta += ddelta) {
-            myfile << r * cos(delta) * sin(alpha) << " " << r * sin(delta) << " " << r * cos(delta) * cos(alpha)
-                   << "\n";
-            myfile << r * cos(delta) * sin(alpha + dalpha) << " " << r * sin(delta) << " "
-                   << r * cos(delta) * cos(alpha + dalpha) << "\n";
-            myfile << r * cos(delta + ddelta) * sin(alpha) << " " << r * sin(delta + ddelta) << " "
-                   << r * cos(delta + ddelta) * cos(alpha) << "\n";
+    for (int i = 0; i < stacks; i++) {
+        alpha = 0;
+        for (int j = 0; j < slices; j++) {
+            alpha += dalpha;
 
-            myfile << r * cos(delta + ddelta) * sin(alpha + dalpha) << " " << r * sin(delta + ddelta) << " "
-                   << r * cos(delta + ddelta) * cos(alpha + dalpha) << "\n";
-            myfile << r * cos(delta + ddelta) * sin(alpha) << " " << r * sin(delta + ddelta) << " "
-                   << r * cos(delta + ddelta) * cos(alpha) << "\n";
-            myfile << r * cos(delta) * sin(alpha + dalpha) << " " << r * sin(delta) << " "
-                   << r * cos(delta) * cos(alpha + dalpha) << "\n";
+            //A
+            x = radius * sin(alpha) * cos(beta);
+            y = radius * sin(beta);
+            z = radius * cos(alpha) * cos(beta);
+            normalSphere(x, y, z, n);
+            myfile << x << " " << y << " " << z << "\n"; //Vertex
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n"; //Normal
+            myfile << alpha / (2 * M_PI) << " " << beta / M_PI + 0.5 << "\n"; //Texture
+
+            //B
+            x = radius * sin(alpha + dalpha) * cos(beta);
+            y = radius * sin(beta);
+            z = radius * cos(alpha + dalpha) * cos(beta);
+            normalSphere(x, y, z, n);
+            myfile << x << " " << y << " " << z << "\n"; //Vertex
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n"; //Normal
+            myfile << (alpha + dalpha) / (2 * M_PI) << " " << beta / M_PI + 0.5 << "\n"; //Texture
+
+            //C
+            x = radius * sin(alpha) * cos(beta + dbeta);
+            y = radius * sin(beta + dbeta);
+            z = radius * cos(alpha) * cos(beta + dbeta);
+            normalSphere(x, y, z, n);
+            myfile << x << " " << y << " " << z << "\n"; //Vertex
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n"; //Normal
+            myfile << alpha / (2 * M_PI) << " " << (beta + dbeta) / M_PI + 0.5 << "\n"; //Texture
+
+            //D
+            x = radius * sin(alpha + dalpha) * cos(beta + dbeta);
+            y = radius * sin(beta + dbeta);
+            z = radius * cos(alpha + dalpha) * cos(beta + dbeta);
+            normalSphere(x, y, z, n);
+            myfile << x << " " << y << " " << z << "\n"; //Vertex
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n"; //Normal
+            myfile << (alpha + dalpha) / (2 * M_PI) << " " << (beta + dbeta) / M_PI + 0.5 << "\n"; //Texture
+
+            //C
+            x = radius * sin(alpha) * cos(beta + dbeta);
+            y = radius * sin(beta + dbeta);
+            z = radius * cos(alpha) * cos(beta + dbeta);
+            normalSphere(x, y, z, n);
+            myfile << x << " " << y << " " << z << "\n"; //Vertex
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n"; //Normal
+            myfile << alpha / (2 * M_PI) << " " << (beta + dbeta) / M_PI + 0.5 << "\n"; //Texture
+
+            //B
+            x = radius * sin(alpha + dalpha) * cos(beta);
+            y = radius * sin(beta);
+            z = radius * cos(alpha + dalpha) * cos(beta);
+            normalSphere(x, y, z, n);
+            myfile << x << " " << y << " " << z << "\n"; //Vertex
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n"; //Normal
+            myfile << (alpha + dalpha) / (2 * M_PI) << " " << beta / M_PI + 0.5 << "\n"; //Texture
         }
+        beta = beta + dbeta;
     }
 
     myfile.close();
@@ -182,6 +261,12 @@ void multMatrixVector(float *m, float *v, float *res) {
     }
 }
 
+void cross(float *a, float *b, float *res) {
+    res[0] = a[1] * b[2] - a[2] * b[1];
+    res[1] = a[2] * b[0] - a[0] * b[2];
+    res[2] = a[0] * b[1] - a[1] * b[0];
+}
+
 float getCordPontoBelzier(float u, float v, float *p0, float *p1, float *p2, float *p3) {
     //Coeficientes de Bezier
     float m[4][4] = {{-1.0f, 3.0f,  -3.0f, 1.0f},
@@ -230,6 +315,102 @@ float getCordPontoBelzier(float u, float v, float *p0, float *p1, float *p2, flo
     return res;
 }
 
+float getCordTanUPontoBezier(float u, float v, float *p0, float *p1, float *p2, float *p3) {
+    //Coeficientes de Bezier
+    float m[4][4] = {{-1.0f, 3.0f,  -3.0f, 1.0f},
+                     {3.0f,  -6.0f, 3.0f,  0.0f},
+                     {-3.0f, 3.0f,  0.0f,  0.0f},
+                     {1.0f,  0.0f,  0.0f,  0.0f}};
+
+    //A = M * P
+    float a[4][4];
+
+    multMatrixVector((float *) m, p0, a[0]);
+    multMatrixVector((float *) m, p1, a[1]);
+    multMatrixVector((float *) m, p2, a[2]);
+    multMatrixVector((float *) m, p3, a[3]);
+
+    transposta(a);
+
+    //B = A * M
+    float b[4][4];
+
+    multMatrixVector((float *) a, m[0], b[0]);
+    multMatrixVector((float *) a, m[1], b[1]);
+    multMatrixVector((float *) a, m[2], b[2]);
+    multMatrixVector((float *) a, m[3], b[3]);
+
+    transposta(b);
+
+    //C = dU * B
+    float dU[4] = {3 * u * u, 2 * u, 1, 0};
+    float c[4];
+
+    for (int i = 0; i < 4; i++) {
+        c[i] = 0;
+        for (int j = 0; j < 4; j++)
+            c[i] += dU[j] * b[j][i];
+    }
+
+    //Coordenada = C * V
+    float V[4] = {v * v * v, v * v, v, 1};
+    float res = 0;
+
+    for (int i = 0; i < 4; i++) {
+        res += c[i] * V[i];
+    }
+
+    return res;
+}
+
+float getCordTanVPontoBezier(float u, float v, float *p0, float *p1, float *p2, float *p3) {
+    //Coeficientes de Bezier
+    float m[4][4] = {{-1.0f, 3.0f,  -3.0f, 1.0f},
+                     {3.0f,  -6.0f, 3.0f,  0.0f},
+                     {-3.0f, 3.0f,  0.0f,  0.0f},
+                     {1.0f,  0.0f,  0.0f,  0.0f}};
+
+    //A = M * P
+    float a[4][4];
+
+    multMatrixVector((float *) m, p0, a[0]);
+    multMatrixVector((float *) m, p1, a[1]);
+    multMatrixVector((float *) m, p2, a[2]);
+    multMatrixVector((float *) m, p3, a[3]);
+
+    transposta(a);
+
+    //B = A * M
+    float b[4][4];
+
+    multMatrixVector((float *) a, m[0], b[0]);
+    multMatrixVector((float *) a, m[1], b[1]);
+    multMatrixVector((float *) a, m[2], b[2]);
+    multMatrixVector((float *) a, m[3], b[3]);
+
+    transposta(b);
+
+    //C = U * B
+    float U[4] = {u * u * u, u * u, u, 1};
+    float c[4];
+
+    for (int i = 0; i < 4; i++) {
+        c[i] = 0;
+        for (int j = 0; j < 4; j++)
+            c[i] += U[j] * b[j][i];
+    }
+
+    //Coordenada = C * dV
+    float dV[4] = {3 * v * v, 2 * v, 1, 0};
+    float res = 0;
+
+    for (int i = 0; i < 4; i++) {
+        res += c[i] * dV[i];
+    }
+
+    return res;
+}
+
 void bezier(const string &input_file, float tl, const string &output_file) {
     ifstream inFile(input_file);
     ofstream outFile;
@@ -256,7 +437,6 @@ void bezier(const string &input_file, float tl, const string &output_file) {
                 ind[j] = stoi(substr);
                 j++;
             }
-
             indp.insert(make_pair(i, ind));
         }
 
@@ -278,12 +458,13 @@ void bezier(const string &input_file, float tl, const string &output_file) {
                 cpoint[j] = stof(substr);
                 j++;
             }
-
             cp.insert(make_pair(i, cpoint));
         }
 
         float ustep = 1 / tl;
         float vstep = 1 / tl;
+
+        float n[12], tU[3], tV[3];
 
         for (int p = 0; p < np; p++) {
             int *indices = indp.at(p);
@@ -327,29 +508,101 @@ void bezier(const string &input_file, float tl, const string &output_file) {
                     p1[1] = getCordPontoBelzier(u, v, p0y, p1y, p2y, p3y);
                     p1[2] = getCordPontoBelzier(u, v, p0z, p1z, p2z, p3z);
 
+                    // tU = dB / du
+                    tU[0] = getCordTanUPontoBezier(u, v, p0x, p1x, p2x, p3x);
+                    tU[1] = getCordTanUPontoBezier(u, v, p0y, p1y, p2y, p3y);
+                    tU[2] = getCordTanUPontoBezier(u, v, p0z, p1z, p2z, p3z);
+
+                    // tV = dB / dv
+                    tV[0] = getCordTanVPontoBezier(u, v, p0x, p1x, p2x, p3x);
+                    tV[1] = getCordTanVPontoBezier(u, v, p0y, p1y, p2y, p3y);
+                    tV[2] = getCordTanVPontoBezier(u, v, p0z, p1z, p2z, p3z);
+
+                    // n = tU x tV
+                    cross(tU, tV, n);
+                    normalize(n);
+
                     float p2[3];
                     p2[0] = getCordPontoBelzier(u, v + vstep, p0x, p1x, p2x, p3x);
                     p2[1] = getCordPontoBelzier(u, v + vstep, p0y, p1y, p2y, p3y);
                     p2[2] = getCordPontoBelzier(u, v + vstep, p0z, p1z, p2z, p3z);
+
+                    // tU = dB / du
+                    tU[0] = getCordTanUPontoBezier(u, v + vstep, p0x, p1x, p2x, p3x);
+                    tU[1] = getCordTanUPontoBezier(u, v + vstep, p0y, p1y, p2y, p3y);
+                    tU[2] = getCordTanUPontoBezier(u, v + vstep, p0z, p1z, p2z, p3z);
+
+                    // tV = dB / dv
+                    tV[0] = getCordTanVPontoBezier(u, v + vstep, p0x, p1x, p2x, p3x);
+                    tV[1] = getCordTanVPontoBezier(u, v + vstep, p0y, p1y, p2y, p3y);
+                    tV[2] = getCordTanVPontoBezier(u, v + vstep, p0z, p1z, p2z, p3z);
+
+                    // n = tU x tV
+                    cross(tU, tV, n + 3);
+                    normalize(n + 3);
 
                     float p3[3];
                     p3[0] = getCordPontoBelzier(u + ustep, v, p0x, p1x, p2x, p3x);
                     p3[1] = getCordPontoBelzier(u + ustep, v, p0y, p1y, p2y, p3y);
                     p3[2] = getCordPontoBelzier(u + ustep, v, p0z, p1z, p2z, p3z);
 
+                    // tU = dB / du
+                    tU[0] = getCordTanUPontoBezier(u + ustep, v, p0x, p1x, p2x, p3x);
+                    tU[1] = getCordTanUPontoBezier(u + ustep, v, p0y, p1y, p2y, p3y);
+                    tU[2] = getCordTanUPontoBezier(u + ustep, v, p0z, p1z, p2z, p3z);
+
+                    // tV = dB / dv
+                    tV[0] = getCordTanVPontoBezier(u + ustep, v, p0x, p1x, p2x, p3x);
+                    tV[1] = getCordTanVPontoBezier(u + ustep, v, p0y, p1y, p2y, p3y);
+                    tV[2] = getCordTanVPontoBezier(u + ustep, v, p0z, p1z, p2z, p3z);
+
+                    // n = tU x tV
+                    cross(tU, tV, n + 6);
+                    normalize(n + 6);
+
                     float p4[3];
                     p4[0] = getCordPontoBelzier(u + ustep, v + vstep, p0x, p1x, p2x, p3x);
                     p4[1] = getCordPontoBelzier(u + ustep, v + vstep, p0y, p1y, p2y, p3y);
                     p4[2] = getCordPontoBelzier(u + ustep, v + vstep, p0z, p1z, p2z, p3z);
 
+                    // tU = dB / du
+                    tU[0] = getCordTanUPontoBezier(u + ustep, v + vstep, p0x, p1x, p2x, p3x);
+                    tU[1] = getCordTanUPontoBezier(u + ustep, v + vstep, p0y, p1y, p2y, p3y);
+                    tU[2] = getCordTanUPontoBezier(u + ustep, v + vstep, p0z, p1z, p2z, p3z);
+
+                    // tV = dB / dv
+                    tV[0] = getCordTanVPontoBezier(u + ustep, v + vstep, p0x, p1x, p2x, p3x);
+                    tV[1] = getCordTanVPontoBezier(u + ustep, v + vstep, p0y, p1y, p2y, p3y);
+                    tV[2] = getCordTanVPontoBezier(u + ustep, v + vstep, p0z, p1z, p2z, p3z);
+
+                    // n = tU x tV
+                    cross(tU, tV, n + 9);
+                    normalize(n + 9);
+
                     outFile << p1[0] << " " << p1[1] << " " << p1[2] << "\n";
-                    outFile << p3[0] << " " << p3[1] << " " << p3[2] << "\n";
-                    outFile << p2[0] << " " << p2[1] << " " << p2[2] << "\n";
+                    outFile << n[0] << " " << n[1] << " " << n[2] << "\n";
+                    outFile << 0 << " " << 0 << "\n";
 
                     outFile << p3[0] << " " << p3[1] << " " << p3[2] << "\n";
+                    outFile << n[6] << " " << n[7] << " " << n[8] << "\n";
+                    outFile << 0 << " " << 0 << "\n";
+
+                    outFile << p2[0] << " " << p2[1] << " " << p2[2] << "\n";
+                    outFile << n[3] << " " << n[4] << " " << n[5] << "\n";
+                    outFile << 0 << " " << 0 << "\n";
+
+
+                    outFile << p3[0] << " " << p3[1] << " " << p3[2] << "\n";
+                    outFile << n[6] << " " << n[7] << " " << n[8] << "\n";
+                    outFile << 0 << " " << 0 << "\n";
+
                     outFile << p4[0] << " " << p4[1] << " " << p4[2] << "\n";
-                    outFile << p2[0] << " " << p2[1] << " " << p2[2] << "\n";
+                    outFile << n[9] << " " << n[10] << " " << n[11] << "\n";
+                    outFile << 0 << " " << 0 << "\n";
 
+                    outFile << p2[0] << " " << p2[1] << " " << p2[2] << "\n";
+                    outFile << n[3] << " " << n[4] << " " << n[5] << "\n";
+                    outFile << 0 << " " << 0 << "\n";
                 }
             }
         }
@@ -361,29 +614,17 @@ void bezier(const string &input_file, float tl, const string &output_file) {
 int main(int argc, char **argv) {
     if (argc == 4 && argv[1] == string("plane")) {
         planeFile(stof(argv[2]), argv[3]);
-    }
-
-    else if (argc == 4 && argv[1] == string("plane")) {
+    } else if (argc == 4 && argv[1] == string("plane")) {
         planeFile((stof(argv[2])), argv[3]);
-    }
-
-    else if (argc == 6 && argv[1] == string("box")) {
+    } else if (argc == 6 && argv[1] == string("box")) {
         boxFile(stof(argv[2]), stof(argv[3]), stof(argv[4]), argv[5]);
-    }
-
-    else if (argc == 6 && argv[1] == string("sphere")) {
+    } else if (argc == 6 && argv[1] == string("sphere")) {
         sphereFile(stof(argv[2]), stoi(argv[3]), stoi(argv[4]), argv[5]);
-    }
-
-    else if (argc == 7 && argv[1] == string("cone")) {
+    } else if (argc == 7 && argv[1] == string("cone")) {
         coneFile(stof(argv[2]), stof(argv[3]), stoi(argv[4]), stoi(argv[5]), argv[6]);
-    }
-
-    else if (argc == 5 && argv[1] == string("bezier")) {
+    } else if (argc == 5 && argv[1] == string("bezier")) {
         bezier(argv[2], stof(argv[3]), argv[4]);
-    }
-
-    else {
+    } else {
         cout << "Input Inválido" << endl;
     }
 
