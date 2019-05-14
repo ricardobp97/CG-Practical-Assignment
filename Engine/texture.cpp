@@ -2,8 +2,6 @@
 #include <IL/il.h>
 #include "texture.h"
 
-GLuint texIDSphere;
-
 int loadTexture(std::string s) {
     unsigned int t, tw, th;
     unsigned char *texData;

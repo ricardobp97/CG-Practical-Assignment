@@ -131,7 +131,7 @@ void draw(std::list<Group> g) {
         std::list<Model>::iterator it_m;
 
         for (it_m = m.begin(); it_m != m.end(); ++it_m) {
-            std::vector<float> v = it_m->getVertices();
+            int v_size = it_m->getVertices().size();
 
             glBindBuffer(GL_ARRAY_BUFFER, vertices_buffers[vertices_nIndB]);
             glVertexPointer(3, GL_FLOAT, 0, nullptr);
@@ -161,7 +161,7 @@ void draw(std::list<Group> g) {
             }
 
             vertices_nIndB++;
-            glDrawArrays(GL_TRIANGLES, 0, v.size());
+            glDrawArrays(GL_TRIANGLES, 0, v_size);
 
             glBindTexture(GL_TEXTURE_2D, 0);
             if (it_m->hasColour() && !lights.empty()) glPopAttrib();
