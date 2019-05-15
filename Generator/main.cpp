@@ -45,59 +45,160 @@ void boxFile(float x, float y, float z, const string &filename) {
     ofstream myfile;
     myfile.open(filename);
 
-    //Base Inferior
+    //Base Inferior  (F)
     myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+    myfile << 0 << " " << -1 << " " << 0 << "\n"; // Normal
+    myfile << 1 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << 0 << " " << z / 2 << "\n"; //D
+    myfile << 0 << " " << -1 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+    myfile << 0 << " " << -1 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 1 / 3.0 << "\n"; // Texture
 
     myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+    myfile << 0 << " " << -1 << " " << 0 << "\n"; // Normal
+    myfile << 1 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+    myfile << 0 << " " << -1 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 1 / 3.0 << "\n"; // Texture
+
     myfile << x / 2 << " " << 0 << " " << -z / 2 << "\n"; //B
+    myfile << 0 << " " << -1 << " " << 0 << "\n"; // Normal
+    myfile << 1 << " " << 1 / 3.0 << "\n"; // Texture
 
-    //Base Superior
+    //Base Superior (B)
     myfile << x / 2 << " " << y << " " << z / 2 << "\n"; //F
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 1 << "\n"; // Texture
+
     myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 1 << "\n"; // Texture
 
     myfile << x / 2 << " " << y << " " << z / 2 << "\n"; //F
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
-    myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 1 << "\n"; // Texture
 
-    //Lateral Frente
+    myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+    myfile << 0 << " " << 1 << " " << 0 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
+    //Lateral Frente (A)
     myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+    myfile << 0 << " " << 0 << " " << 1 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << x / 2 << " " << y << " " << z / 2 << "\n"; //F
+    myfile << 0 << " " << 0 << " " << 1 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 1 << "\n"; // Texture
+
     myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+    myfile << 0 << " " << 0 << " " << 1 << "\n"; // Normal
+    myfile << 0 << " " << 1 << "\n"; // Texture
+
 
     myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+    myfile << 0 << " " << 0 << " " << 1 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+    myfile << 0 << " " << 0 << " " << 1 << "\n"; // Normal
+    myfile << 0 << " " << 1 << "\n"; // Texture
+
     myfile << -x / 2 << " " << 0 << " " << z / 2 << "\n"; //D
+    myfile << 0 << " " << 0 << " " << 1 << "\n"; // Normal
+    myfile << 0 << " " << 2 / 3.0 << "\n"; // Texture
 
-    //Lateral Trás
+    //Lateral Trás (D)
     myfile << x / 2 << " " << 0 << " " << -z / 2 << "\n"; //B
+    myfile << 0 << " " << 0 << " " << -1 << "\n"; // Normal
+    myfile << 0 << " " << 1 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+    myfile << 0 << " " << 0 << " " << -1 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 1 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+    myfile << 0 << " " << 0 << " " << -1 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
 
     myfile << x / 2 << " " << 0 << " " << -z / 2 << "\n"; //B
+    myfile << 0 << " " << 0 << " " << -1 << "\n"; // Normal
+    myfile << 0 << " " << 1 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
-    myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+    myfile << 0 << " " << 0 << " " << -1 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
 
-    //Lateral Direita
+    myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+    myfile << 0 << " " << 0 << " " << -1 << "\n"; // Normal
+    myfile << 0 << " " << 2 / 3.0 << "\n"; // Texture
+
+    //Lateral Direita (C)
     myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+    myfile << 1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << x / 2 << " " << 0 << " " << -z / 2 << "\n"; //B
+    myfile << 1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 1 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+    myfile << 1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 1 << " " << 1 << "\n"; // Texture
+
 
     myfile << x / 2 << " " << 0 << " " << z / 2 << "\n"; //A
+    myfile << 1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << x / 2 << " " << y << " " << -z / 2 << "\n"; //G
+    myfile << 1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 1 << " " << 1 << "\n"; // Texture
+
     myfile << x / 2 << " " << y << " " << z / 2 << "\n"; //F
+    myfile << 1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 1 << "\n"; // Texture
 
-    //Lateral Esquerda
+    //Lateral Esquerda (E)
     myfile << -x / 2 << " " << 0 << " " << z / 2 << "\n"; //D
-    myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
-    myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+    myfile << -1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 1 / 3.0 << "\n"; // Texture
 
     myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
-    myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+    myfile << -1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
     myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+    myfile << -1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 1 / 3.0 << "\n"; // Texture
+
+
+    myfile << -x / 2 << " " << y << " " << z / 2 << "\n"; //E
+    myfile << -1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 2 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
+
+    myfile << -x / 2 << " " << y << " " << -z / 2 << "\n"; //H
+    myfile << -1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 2 / 3.0 << "\n"; // Texture
+
+    myfile << -x / 2 << " " << 0 << " " << -z / 2 << "\n"; //C
+    myfile << -1 << " " << 0 << " " << 0 << "\n"; // Normal
+    myfile << 1 / 3.0 << " " << 1 / 3.0 << "\n"; // Texture
 
     myfile.close();
     cout << "DONE" << endl;
@@ -205,34 +306,132 @@ void coneFile(float radius, float height, int slices, int stacks, const string &
     float alpha = 0;
     float dalpha = 2 * M_PI / slices;
 
-    float h = -height / 2;
-    float dh = height / stacks;
+    float raioatual, raioanterior = radius;
+    float hstack = height / stacks;
 
-    float r = radius;
-    float dr = radius / stacks;
+    float nH = radius / sqrt(height * height + radius * radius);
+    float n[3];
+    float t[2];
+    float hFact = 0.5f / height;
+    float x, y, z;
 
+    //base
     for (int i = 0; i < slices; i++) {
-        myfile << 0 << " " << -height / 2 << " " << 0 << "\n";//O
-        myfile << radius * sin(alpha + dalpha) << " " << -height / 2 << " " << radius * cos(alpha + dalpha) << "\n";//B
-        myfile << radius * sin(alpha) << " " << -height / 2 << " " << radius * cos(alpha) << "\n"; //A
+        myfile << 0 << " " << 0 << " " << 0 << "\n";//O
+        myfile << 0 << " " << -1 << " " << 0 << "\n"; //normal
+        myfile << 0.2f << " " << 0.8f << "\n"; //texture
+
+        myfile << radius * sin(alpha + dalpha) << " " << 0 << " " << radius * cos(alpha + dalpha) << "\n";//B
+        myfile << 0 << " " << -1 << " " << 0 << "\n"; //normal
+        myfile << 0.2f + 0.2f * cos(alpha + dalpha) << " " << 0.8f + 0.2f * sin(alpha + dalpha) << "\n"; //texture
+
+        myfile << radius * sin(alpha) << " " << 0 << " " << radius * cos(alpha) << "\n"; //A
+        myfile << 0 << " " << -1 << " " << 0 << "\n"; //normal
+        myfile << 0.2f + 0.2f * cos(alpha) << " " << 0.8f + 0.2f * sin(alpha) << "\n"; //texture
 
         alpha = alpha + dalpha;
     }
 
+    //laterais
     for (int i = 0; i < stacks; i++) {
-        for (int j = 0; j < slices; j++) {
-            myfile << r * cos(alpha) << " " << h << " " << r * sin(alpha) << '\n';
-            myfile << (r - dr) * cos(alpha) << " " << h + dh << " " << (r - dr) * sin(alpha) << '\n';
-            myfile << (r - dr) * cos(alpha + dalpha) << " " << h + dh << " " << (r - dr) * sin(alpha + dalpha) << '\n';
+        raioatual = (height - (i + 1)*hstack)*radius / height;
+        alpha = 0;
+        for (int j= 0; j < slices; j++) {
+            //T1: A, B, C
+            //A
+            x = raioanterior * sin(alpha);
+            y = hstack * i;
+            z = raioanterior * cos(alpha);
+            n[0] = sin(alpha);
+            n[1] = nH;
+            n[2] = cos(alpha);
+            normalize(n);
+            t[0] = 0.5f - (0.5f - hFact * y) * cos(0.4f * alpha);
+            t[1] = (0.5f - hFact * y) * sin(0.4f * alpha);
 
-            myfile << r * cos(alpha) << " " << h << " " << r * sin(alpha) << '\n';
-            myfile << (r - dr) * cos(alpha + dalpha) << " " << h + dh << " " << (r - dr) * sin(alpha + dalpha) << '\n';
-            myfile << r * cos(alpha + dalpha) << " " << h << " " << r * sin(alpha + dalpha) << '\n';
+            myfile << x << " " << y << " " << z << "\n";
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n";
+            myfile << t[0] << " " << t[1] << "\n";
 
-            alpha += dalpha;
+            //B
+            x = raioatual * sin(alpha + dalpha);
+            y = hstack * (i + 1);
+            z = raioatual * cos(alpha + dalpha);
+            n[0] = sin(alpha + dalpha);
+            n[1] = nH;
+            n[2] = cos(alpha + dalpha);
+            normalize(n);
+            t[0] = 0.5f - (0.5f - hFact * y) * cos(0.4f * (alpha + dalpha));
+            t[1] = (0.5f - hFact * y) * sin(0.4f * (alpha + dalpha));
+
+            myfile << x << " " << y << " " << z << "\n";
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n";
+            myfile << t[0] << " " << t[1] << "\n";
+
+            //C
+            x = raioatual * sin(alpha);
+            y = hstack * (i + 1);
+            z = raioatual * cos(alpha);
+            n[0] = sin(alpha);
+            n[1] = nH;
+            n[2] = cos(alpha);
+            normalize(n);
+            t[0] = 0.5f - (0.5f - hFact * y) * cos(0.4f * alpha);
+            t[1] = (0.5f - hFact * y) * sin(0.4f * alpha);
+
+            myfile << x << " " << y << " " << z << "\n";
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n";
+            myfile << t[0] << " " << t[1] << "\n";
+
+            //T2: A, D, B
+            //A
+            x = raioanterior * sin(alpha);
+            y = hstack * i;
+            z = raioanterior * cos(alpha);
+            n[0] = sin(alpha);
+            n[1] = nH;
+            n[2] = cos(alpha);
+            normalize(n);
+            t[0] = 0.5f - (0.5f - hFact * y) * cos(0.4f * alpha);
+            t[1] = (0.5f - hFact * y) * sin(0.4f * alpha);
+
+            myfile << x << " " << y << " " << z << "\n";
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n";
+            myfile << t[0] << " " << t[1] << "\n";
+
+            //D
+            x = raioanterior * sin(alpha + dalpha);
+            y = hstack * i;
+            z = raioanterior * cos(alpha + dalpha);
+            n[0] = sin(alpha + dalpha);
+            n[1] = nH;
+            n[2] = cos(alpha + dalpha);
+            normalize(n);
+            t[0] = 0.5f - (0.5f - hFact * y) * cos(0.4f * (alpha + dalpha));
+            t[1] = (0.5f - hFact * y) * sin(0.4f * (alpha + dalpha));
+
+            myfile << x << " " << y << " " << z << "\n";
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n";
+            myfile << t[0] << " " << t[1] << "\n";
+
+            //B
+            x = raioatual * sin(alpha + dalpha);
+            y = hstack * (i + 1);
+            z = raioatual * cos(alpha + dalpha);
+            n[0] = sin(alpha + dalpha);
+            n[1] = nH;
+            n[2] = cos(alpha + dalpha);
+            normalize(n);
+            t[0] = 0.5f - (0.5f - hFact * y) * cos(0.4f * (alpha + dalpha));
+            t[1] = (0.5 - hFact * y) * sin(0.4f * (alpha + dalpha));
+
+            myfile << x << " " << y << " " << z << "\n";
+            myfile << n[0] << " " << n[1] << " " << n[2] << "\n";
+            myfile << t[0] << " " << t[1] << "\n";
+
+            alpha = alpha + dalpha;
         }
-        h += dh;
-        r -= dr;
+        raioanterior = raioatual;
     }
 
     myfile.close();

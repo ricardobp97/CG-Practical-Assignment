@@ -1,7 +1,17 @@
 <scene>
+    <lights>
+        <light type="DIRECTIONAL" dirX="0" dirY="-1" dirZ="0"/>
+        <light type="POINT" posX="-1" posY="2" posZ="0"/>
+    </lights>
     <group>
         <models>
-            <model file="box.3d" />
+            <model file="box.3d" texture="cube.png"/>
+        </models>
+    </group>
+    <group>
+        <translate X="0" Y="0" Z="1"/>
+        <models>
+            <model file="box.3d" diffR="0" diffG="0" diffB="1"/>
         </models>
     </group>
 </scene>
